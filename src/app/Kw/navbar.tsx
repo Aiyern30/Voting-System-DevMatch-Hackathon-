@@ -8,7 +8,8 @@ function Navbar() {
             Vote
           </a>
         </div>
-        <div className="navbar-center">
+
+        <div className="navbar-right">
           <ul className="nav-links">
             <li>
               <a href="/form">Form</a>
@@ -19,9 +20,21 @@ function Navbar() {
             <li>
               <a href="/contact">Contact</a>
             </li>
+            <li>
+              <a href="/contact">Contact</a>
+            </li>
+            <li>
+              <a href="/contact">Contact</a>
+            </li>
+            <li>
+              <a href="/contact">Contact</a>
+            </li>
+            <li>
+              <a href="/contact">Contact</a>
+            </li>
           </ul>
-        </div>
-        <div className="navbar-right">
+          {/* </div>
+        <div className="navbar-right"> */}
           <a href="/cart" className="cart-icon">
             <i className="fas fa-shopping-cart"></i>
             <span className="cart-count">0</span>

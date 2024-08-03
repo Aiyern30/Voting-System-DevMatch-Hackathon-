@@ -7,6 +7,10 @@
   padding: 1rem;
 }
 
+.navbar-center {
+  padding-left: 200px;
+}
+
 .navbar-left .logo {
   font-size: 1.5rem;
   font-weight: bold;
@@ -14,20 +18,27 @@
   text-decoration: none;
 }
 
-.navbar-center .nav-links {
+/* change */
+.navbar-right .nav-links {
   list-style-type: none;
   display: flex;
   margin: 0;
   padding: 0;
 }
-
-.navbar-center .nav-links li {
+/* change */
+.navbar-right .nav-links li {
   margin-right: 1rem;
 }
-
-.navbar-center .nav-links a {
+/* change */
+.navbar-right .nav-links a {
   color: black;
   text-decoration: none;
+}
+
+@media screen and (max-width: 400px) {
+  h1 {
+    font-size: 1.2em;
+  }
 }
 
 .navbar-right {
