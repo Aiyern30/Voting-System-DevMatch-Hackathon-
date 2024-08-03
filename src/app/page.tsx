@@ -1,5 +1,11 @@
 import Image from "next/image";
+import Navigation from "./Kw/navbar";
 
 export default function Home() {
-  return <div>Here is the homeapage o</div>;
+  return (
+    <div>
+      <Navigation />
+      Here is the homeapage o
+    </div>
+  );
 }
