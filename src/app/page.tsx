@@ -1,5 +1,10 @@
+import Header from "@/components/ui/Components/Header";
 import Image from "next/image";
 
 export default function Home() {
-  return <div>Here is the homeapage o</div>;
+  return (
+    <div>
+      <Header></Header>
+    </div>
+  );
 }
