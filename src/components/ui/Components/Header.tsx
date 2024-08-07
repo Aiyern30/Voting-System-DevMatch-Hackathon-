@@ -25,7 +25,7 @@ const Header = () => {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
-        <div>Home Page</div>
+        <div>{pathname.split("/")[1]}</div>
       </div>
       <div className="flex items-center space-x-4 cursor-pointer">
         {links.map((link) => (
@@ -39,9 +39,11 @@ const Header = () => {
             {link.name}
           </a>
         ))}
-        <Button className="bg-[#C39898] border border-[#2A2929] text-black">
-          Login / Register
-        </Button>
+        <a href="/Login">
+          <Button className="bg-[#C39898] border border-[#2A2929] text-black">
+            Login / Register
+          </Button>
+        </a>
       </div>
     </div>
   );
