@@ -25,7 +25,7 @@ const Header = () => {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
-        <div>{pathname.split("/")[1]}</div>
+        <div>{pathname?.split("/")[1]}</div>
       </div>
       <div className="flex items-center space-x-4 cursor-pointer">
         {links.map((link) => (
