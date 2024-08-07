@@ -1,5 +1,5 @@
-// lib/neonClient.js
-const { Client } = require('pg');
+// src/lib/neonClient.ts
+import { Client } from "pg";
 
 const client = new Client({
   connectionString: process.env.NEXT_PUBLIC_DATABASE_URL, // Use your NeonDB connection string
@@ -8,18 +8,22 @@ const client = new Client({
   },
 });
 
+let isConnected = false;
+
 const connectToDatabase = async () => {
-  await client.connect();
-  console.log('Connected to NeonDB');
+  if (!isConnected) {
+    await client.connect();
+    isConnected = true;
+    console.log("Connected to NeonDB");
+  }
 };
 
 const disconnectFromDatabase = async () => {
-  await client.end();
-  console.log('Disconnected from NeonDB');
+  if (isConnected) {
+    await client.end();
+    isConnected = false;
+    console.log("Disconnected from NeonDB");
+  }
 };
 
-module.exports = {
-  client,
-  connectToDatabase,
-  disconnectFromDatabase,
-};
+export { client, connectToDatabase, disconnectFromDatabase };
