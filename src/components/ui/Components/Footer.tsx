@@ -39,8 +39,8 @@ const Footer = () => {
   return (
     <div>
       <div className="grid grid-cols-4 gap-10 ">
-        <div className="h-full flex flex-col flex-wrap justify-center items-center py-4">
-          <div className="font-bold justify-center flex item-center ">
+        <div className="h-full flex flex-col flex-wrap justify-center items-center">
+          <div className="font-bold justify-center flex item-center p-3 ">
             Our social media
           </div>
           <div className="justify-center flex items-center">
