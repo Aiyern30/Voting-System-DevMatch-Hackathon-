@@ -39,33 +39,31 @@ const Footer = () => {
   return (
     <div>
       <div className="grid grid-cols-4 gap-10 ">
-        <div className=" border-2 border-rose-500 justify-center">
-          <div className="flex flex-col flex-wrap justify-center items-center py-4">
-            <div className="font-bold justify-center flex item-center ">
-              Our social media
-            </div>
-            <div className="justify-center flex items-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger className=" grid grid-cols-2 gap-4">
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                  </Avatar>
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                  </Avatar>
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                  </Avatar>
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                  </Avatar>
-                </DropdownMenuTrigger>
-              </DropdownMenu>
-            </div>
+        <div className="h-full flex flex-col flex-wrap justify-center items-center py-4">
+          <div className="font-bold justify-center flex item-center ">
+            Our social media
+          </div>
+          <div className="justify-center flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger className=" grid grid-cols-2 gap-4">
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                </Avatar>
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                </Avatar>
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                </Avatar>
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                </Avatar>
+              </DropdownMenuTrigger>
+            </DropdownMenu>
           </div>
         </div>
 
-        <div className="border-2 border-rose-500">
+        <div>
           <div className="font-bold py-3">Use Cases</div>
           <div className="grid grid-cols-2 gap-4">
             {links.map((link) => (
@@ -81,7 +79,8 @@ const Footer = () => {
             ))}
           </div>
         </div>
-        <div className="border-2 border-rose-500">
+
+        <div>
           <div className="font-bold py-3">Explore</div>
           <div className="grid grid-cols-2 gap-4">
             {ExploreLinks.map((link2) => (
@@ -97,7 +96,8 @@ const Footer = () => {
             ))}
           </div>
         </div>
-        <div className="border-2 border-rose-500">
+
+        <div>
           <div className="font-bold py-3">Resources</div>
           <div className="grid grid-cols-2 gap-4">
             {ResourcesLinks.map((link3) => (
