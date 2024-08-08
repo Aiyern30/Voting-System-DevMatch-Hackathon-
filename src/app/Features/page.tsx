@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/Card";
 import Header from "@/components/ui/Components/Header";
 import React from "react";
+import Footer from "@/components/ui/Components/Footer";
 
 const page = () => {
   return (
@@ -53,6 +54,10 @@ const page = () => {
             </CardDescription>
           </CardHeader>
         </Card>
+      </div>
+      <div className="bg-[#DBB5B5] h-16 mt-20"></div>
+      <div>
+        <Footer />
       </div>
     </div>
   );

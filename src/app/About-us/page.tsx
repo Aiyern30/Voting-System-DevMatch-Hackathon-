@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import Header from "@/components/ui/Components/Header";
 import { cn } from "@/lib/utils";
 import React from "react";
+import Footer from "@/components/ui/Components/Footer";
 
 const Page = () => {
   const items = [
@@ -67,6 +68,30 @@ const Page = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* This is the grid that match the figma, but idk how to implement into the link*/}
+      {/* <div className="grid grid-rows-5 grid-flow-col gap-4 h-auto ">
+        <div className="border-2 border-red-500">1</div>
+
+        <div className="grid grid-rows-subgrid gap-4 row-span-2">
+          <div className="border-2 border-red-500 row-start-2">2</div>
+        </div>
+        <div className="grid grid-rows-subgrid gap-4 row-span-2">
+          <div className="border-2 border-red-500 row-start-2">3</div>
+        </div>
+        <div className="grid grid-rows-subgrid gap-4 row-span-2">
+          <div className="border-2 border-red-500 row-start-2">4</div>
+        </div>
+        <div className="grid grid-rows-subgrid gap-4 row-span-2">
+          <div className="border-2 border-red-500 row-start-2">5</div>
+        </div>
+      </div> */}
+
+      <div className="bg-[#DBB5B5] h-16 mt-20"></div>
+
+      <div>
+        <Footer />
       </div>
     </div>
   );
