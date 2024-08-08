@@ -26,7 +26,7 @@ const Header = () => {
   ];
 
   return (
-    <div className="flex justify-between items-center p-4 shadow-md bg-[#DBB5B5]">
+    <div className="h-[64px] flex justify-between items-center p-4 shadow-md bg-[#DBB5B5]">
       <div className="flex items-center space-x-4">
         <div className="cursor-pointer">
           <DropdownMenu>
