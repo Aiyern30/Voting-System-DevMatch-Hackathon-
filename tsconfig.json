@@ -22,14 +22,13 @@
     }
   },
   "include": [
-  "next-env.d.ts",
-  "**/*.ts",
-  "**/*.tsx",
-  ".next/types/**/*.ts",
-  "global.d.ts", // Make sure this line is present
-  "**/*.d.ts",   // This will include all .d.ts files
-  "pages/interact.js"
-]
-,
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "global.d.ts", // Make sure this line is present
+    "**/*.d.ts", // This will include all .d.ts files
+    "pages/interact.ts"
+  ],
   "exclude": ["node_modules"]
 }
