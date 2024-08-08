@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/Alert";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../AuthContext";
+import Footer from "@/components/ui/Components/Footer";
 
 const Page: React.FC = () => {
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -111,7 +112,7 @@ const Page: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="flex-grow flex items-center justify-center">
+      <div className="flex-grow flex items-center justify-center pt-10">
         <Tabs defaultValue="Login" className="">
           <TabsList>
             <TabsTrigger value="Login">Account</TabsTrigger>
@@ -262,6 +263,11 @@ const Page: React.FC = () => {
             </Card>
           </TabsContent>
         </Tabs>
+      </div>
+      <div className="bg-[#DBB5B5] h-16 mt-20"></div>
+
+      <div>
+        <Footer />
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/Carousel";
 import Header from "@/components/ui/Components/Header";
 import React from "react";
+import Footer from "@/components/ui/Components/Footer";
 
 const page = () => {
   // Define an array of card data with titles and descriptions
@@ -46,6 +47,10 @@ const page = () => {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
+      <div className="bg-[#DBB5B5] h-16 mt-20"></div>
+      <div>
+        <Footer />
+      </div>
     </div>
   );
 };
