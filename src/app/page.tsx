@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import Header from "@/components/ui/Components/Header";
+import Footer from "@/components/ui/Components/Footer";
 const url = process.env.NEXT_PUBLIC_API_URL;
 console.log("url", url);
 
@@ -7,7 +8,7 @@ export default function Home() {
   return (
     <div>
       <Header />
-      
+
       <div className="w-full h-[630px] bg-[#F1E5D1] flex justify-center items-center relative">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-50"
@@ -28,6 +29,9 @@ export default function Home() {
         </div>
       </div>
       <div className="bg-[#DBB5B5] h-16"></div>
+      <div>
+        <Footer />
+      </div>
     </div>
   );
 }
