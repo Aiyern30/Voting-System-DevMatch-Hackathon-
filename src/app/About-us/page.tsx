@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
+import Image from "next/image";
 import Header from "@/components/ui/Components/Header";
 import { cn } from "@/lib/utils";
 import React from "react";
@@ -57,7 +58,8 @@ const Page = () => {
                 <div>{item.name}</div>
                 <div>{item.description}</div>
               </div>
-              <img
+
+              <Image
                 src={item.picture}
                 alt=""
                 width={80}

@@ -1,5 +1,3 @@
-import { X } from "lucide-react";
-
 require("dotenv").config();
 const ethers = require("ethers");
 
@@ -170,6 +168,12 @@ console.log("Private Key:", process.env.NEXT_PUBLIC_PRIVATE_KEY); // For debuggi
 const provider = new ethers.providers.JsonRpcProvider(
   process.env.NEXT_PUBLIC_API_URL
 );
+
+if (!provider) {
+  throw new Error(
+    "Provider initialization failed. Check if API URL is correct."
+  );
+}
 
 // Function to verify TAC
 export async function verifyTAC() {

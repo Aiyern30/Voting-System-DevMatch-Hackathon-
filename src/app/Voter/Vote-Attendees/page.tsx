@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -103,7 +104,8 @@ const page = () => {
       <div className="flex justify-center items-center h-full">
         <div className="flex flex-col">
           <div className="text-center text-[96px]">Oops! Session Timeout</div>
-          <img
+
+          <Image
             src="/Timeout.png"
             alt=""
             width={512}

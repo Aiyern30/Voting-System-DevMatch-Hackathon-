@@ -1,5 +1,5 @@
-"use client"
-import { useEffect, useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 
 const GetHost = () => {
   const [host, setHost] = useState<string | null>(null);
@@ -8,14 +8,14 @@ const GetHost = () => {
   useEffect(() => {
     const fetchHost = async () => {
       try {
-        const response = await fetch('/api/getHost');
+        const response = await fetch("/api/getHost");
         if (!response.ok) {
-          throw new Error('Failed to fetch host');
+          throw new Error("Failed to fetch host");
         }
         const data = await response.json();
         setHost(data.host);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Unknown error');
+        setError(error instanceof Error ? error.message : "Unknown error");
       }
     };
 
@@ -23,13 +23,7 @@ const GetHost = () => {
   }, []);
 
   return (
-    <div>
-      {error ? (
-        <p>Error: {error}</p>
-      ) : (
-        <p>Election Host: {host}</p>
-      )}
-    </div>
+    <div>{error ? <p>Error: {error}</p> : <p>Election Host: {host}</p>}</div>
   );
 };
 
