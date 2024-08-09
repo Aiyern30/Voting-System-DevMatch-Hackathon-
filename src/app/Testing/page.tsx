@@ -97,8 +97,8 @@ const Page: React.FC = () => {
     e.preventDefault(); // Prevents page refresh
 
     try {
-      const result = await verifyTAC();
-      console.log("TAC Verification Result:", result);
+      // const result = await verifyTAC();
+      // console.log("TAC Verification Result:", result);
 
       // Add the candidate using the addCandidate function
       const tx = await addCandidate(candidateName, candidateId);

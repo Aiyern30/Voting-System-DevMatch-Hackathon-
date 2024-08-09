@@ -46,7 +46,7 @@ const Page: React.FC = () => {
         setPassword("");
 
         setTimeout(() => {
-          router.push("/Voter");
+          router.push("Login/OwnerHomepage");
         }, 3000); // Delay the redirect
       } else {
         const data = await response.json();
