@@ -11,29 +11,44 @@ import {
   TableCell,
 } from "@/components/ui/Table";
 import React, { useEffect, useState } from "react";
+import { getCandidates, removeCandidate } from "../../../../../pages/interact";
+import { Button } from "@/components/ui/Button";
 
-const candidate = [
-  {
-    CandidateID: "C0001",
-    CandidateName: "Aaron Chia",
-    CandidateEmail: "bJNQK@example.com",
-  },
-];
+interface Candidate {
+  id: string; // or number if you convert to number
+  name: string;
+  voteCount: string; // or number if you convert to number
+}
 
 const Page = () => {
-  const [candidateInfo, setCandidateInfo] = useState("");
+  const [candidates, setCandidates] = useState<Candidate[]>([]); // Specify the type for state
 
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        // Your API call logic here
+        const fetchedCandidates = await getCandidates(); // Fetch candidates
+        console.log("Fetched Candidates:", fetchedCandidates);
+        setCandidates(fetchedCandidates); // Set fetched candidates to state
       } catch (error) {
         console.error("Error fetching candidates:", error);
       }
     };
 
-    fetchCandidates();
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+    fetchCandidates(); // Call the fetch function
+  }, []); // Runs once when the component mounts
+
+  const handleRemoveCandidate = async (id: string) => {
+    try {
+      await removeCandidate(parseInt(id)); // Remove candidate from the blockchain
+      // Update local state to remove candidate
+      setCandidates((prevCandidates) =>
+        prevCandidates.filter((candidate) => candidate.id !== id)
+      );
+      console.log("Candidate removed successfully");
+    } catch (error) {
+      console.error("Error removing candidate:", error);
+    }
+  };
 
   return (
     <div>
@@ -44,19 +59,26 @@ const Page = () => {
           <TableCaption>A list of your recent Candidates.</TableCaption>
           <TableHeader className="bg-[#C39898]">
             <TableRow>
-              <TableHead className="text-black">Candidate ID</TableHead>
+              <TableHead className="text-black">Number</TableHead>
               <TableHead className="text-black">Candidate Name</TableHead>
-              <TableHead className="text-black">Email Address</TableHead>
+              <TableHead className="text-black">Vote Count</TableHead>
+              <TableHead className="text-black">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="bg-white">
-            {candidate.map((Candidates) => (
-              <TableRow key={Candidates.CandidateID}>
-                <TableCell className="font-medium">
-                  {Candidates.CandidateID}
+            {candidates.map((candidate: Candidate, index) => (
+              <TableRow key={candidate.id}>
+                <TableCell className="font-medium">{index + 1}</TableCell>{" "}
+                <TableCell>{candidate.name}</TableCell>
+                <TableCell>{candidate.voteCount}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleRemoveCandidate(candidate.id)} // Call the remove function
+                  >
+                    Remove
+                  </Button>
                 </TableCell>
-                <TableCell>{Candidates.CandidateName}</TableCell>
-                <TableCell>{Candidates.CandidateEmail}</TableCell>
               </TableRow>
             ))}
           </TableBody>
