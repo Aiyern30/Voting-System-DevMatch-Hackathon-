@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import Header from "@/components/ui/Components/Header";
 import { Input } from "@/components/ui/Input";
@@ -46,7 +46,7 @@ const Page: React.FC = () => {
         setPassword("");
 
         setTimeout(() => {
-          router.push("/Voter");
+          router.push("Login/OwnerHomepage");
         }, 3000); // Delay the redirect
       } else {
         const data = await response.json();
@@ -147,10 +147,11 @@ const Page: React.FC = () => {
                         placeholder="Email Address"
                         className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
-                      <img
-                        src="gmail.png"
-                        alt=""
+                      <Image
+                        src={"/gmail.png"}
+                        alt={""}
                         width={45}
+                        height={45}
                         className="absolute top-2 left-7"
                       />
                     </div>
@@ -163,10 +164,11 @@ const Page: React.FC = () => {
                         placeholder="Password"
                         className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
-                      <img
-                        src="lock.png"
-                        alt=""
+                      <Image
+                        src={"/lock.png"}
+                        alt={""}
                         width={45}
+                        height={45}
                         className="absolute top-2 left-7"
                       />
                     </div>
@@ -211,10 +213,11 @@ const Page: React.FC = () => {
                         placeholder="Email Address"
                         className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
-                      <img
-                        src="gmail.png"
-                        alt=""
+                      <Image
+                        src={"/gmail.png"}
+                        alt={""}
                         width={45}
+                        height={45}
                         className="absolute top-2 left-7"
                       />
                     </div>
@@ -227,10 +230,11 @@ const Page: React.FC = () => {
                         placeholder="Password"
                         className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
-                      <img
-                        src="lock.png"
-                        alt=""
+                      <Image
+                        src={"/lock.png"}
+                        alt={""}
                         width={45}
+                        height={45}
                         className="absolute top-2 left-7"
                       />
                     </div>
@@ -243,10 +247,11 @@ const Page: React.FC = () => {
                         placeholder="Confirm Password"
                         className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
-                      <img
-                        src="lock.png"
-                        alt=""
+                      <Image
+                        src={"/lock.png"}
+                        alt={""}
                         width={45}
+                        height={45}
                         className="absolute top-2 left-7"
                       />
                     </div>
