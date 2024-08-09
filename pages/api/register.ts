@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase, client } from "@/lib/neonClient"; // Corrected import to neonClient
+import { connectToDatabase, client } from "@/lib/neonClient";
 import { hash } from "bcrypt";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
-    const { registerEmail, registerPassword } = req.body; // Change here
+    const { registerEmail, registerPassword } = req.body;
     console.log(registerEmail, registerPassword);
 
     if (!registerEmail || !registerPassword) {
@@ -14,10 +14,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     try {
-      await connectToDatabase(); // Ensure you connect to the database
+      await connectToDatabase();
 
       const existingUserQuery = "SELECT * FROM Owner WHERE OwnerEmail = $1";
-      const existingUserValues = [registerEmail]; // Change here
+      const existingUserValues = [registerEmail];
       const existingUserResult = await client.query(
         existingUserQuery,
         existingUserValues
@@ -28,12 +28,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // Hash the password before saving
-      const hashedPassword = await hash(registerPassword, 10); // Change here
+      const hashedPassword = await hash(registerPassword, 10);
 
-      // Save the new owner
       const insertQuery =
         "INSERT INTO Owner (OwnerEmail, OwnerPassword, Status) VALUES ($1, $2, $3)";
-      const insertValues = [registerEmail, hashedPassword, "active"]; // Change here
+      const insertValues = [registerEmail, hashedPassword, "active"];
       await client.query(insertQuery, insertValues);
 
       return res
