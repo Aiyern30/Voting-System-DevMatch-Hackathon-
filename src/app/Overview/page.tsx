@@ -8,15 +8,16 @@ import {
 } from "@/components/ui/Card";
 import Header from "@/components/ui/Components/Header";
 import React from "react";
+import Footer from "@/components/ui/Components/Footer";
 
 const page = () => {
   return (
     <div>
       <Header></Header>
-      <div className="text-3xl font-bold text-center my-5">
+      <div className="text-3xl font-bold text-center m-8">
         Decentralized Voting System
       </div>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl  mx-auto mb-20 ">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
           <Card>
             <CardHeader>
@@ -77,6 +78,10 @@ const page = () => {
             </CardHeader>
           </Card>
         </div>
+      </div>
+      <div className="bg-[#DBB5B5] h-16"></div>
+      <div>
+        <Footer />
       </div>
     </div>
   );
