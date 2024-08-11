@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import React, { useState } from "react";
-import { addCandidate } from "../../../../../pages/interact";
 import Header from "@/components/ui/Components/Header";
 import {
   Select,
@@ -17,24 +16,24 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 
-// Define a type for the input keys
-type InputKey = "name" | "id" | "gender" | "position" | "email" | "picture";
+type InputKey = "name" | "id" | "gender" | "position" | "email";
 
 const Page = () => {
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+
   const [input, setInput] = useState<{
     name: string;
     id: number;
     gender: string;
     position: string;
     email: string;
-    picture: string;
   }>({
     name: "",
     id: 0,
     gender: "",
     position: "",
     email: "",
-    picture: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,26 +51,56 @@ const Page = () => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setInput((prevInput) => ({
-        ...prevInput,
-        picture: file.name, // or store the file object itself if needed
-      }));
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted", input);
 
-    // try {
-    //   const tx = await addCandidate(input.name, input.id);
-    //   console.log("Candidate added successfully:", tx);
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
+    const formData = {
+      candidateName: input.name,
+      candidateGender: input.gender,
+      candidatePosition: input.position,
+      candidateEmail: input.email,
+      candidateid: input.id,
+    };
+
+    try {
+      const response = await fetch("/api/setCandidate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("data: ", data);
+        setSubmitSuccess("Submit successful!");
+
+        // Clear the input fields
+        setInput({
+          name: "",
+          id: 0,
+          gender: "",
+          position: "",
+          email: "",
+        });
+
+        setTimeout(() => {
+          setSubmitSuccess(null);
+        }, 3000);
+      } else {
+        const data = await response.json();
+        setSubmitError(data.message);
+        setTimeout(() => {
+          setSubmitError(null);
+        }, 3000);
+      }
+    } catch (error) {
+      setSubmitError("An error occurred. Please try again.");
+      setTimeout(() => {
+        setSubmitError(null);
+      }, 3000);
+    }
   };
 
   return (
@@ -87,11 +116,11 @@ const Page = () => {
               ].map(({ label, type, placeholder }, index) => (
                 <div
                   key={index}
-                  className="flex w-full max-w-lg items-center gap-1"
+                  className="flex w-full max-w-lg items-center gap-3"
                 >
                   <Label
                     htmlFor={label.toLowerCase()}
-                    className="flex-1 text-lg font-medium"
+                    className="w-32 text-lg font-medium whitespace-nowrap"
                   >
                     {label}:
                   </Label>
@@ -105,8 +134,11 @@ const Page = () => {
                   />
                 </div>
               ))}
-              <div className="flex w-full max-w-lg items-center gap-1">
-                <Label htmlFor="gender" className="flex-1 text-lg font-medium">
+              <div className="flex w-full max-w-lg items-center gap-3">
+                <Label
+                  htmlFor="gender"
+                  className="w-32 text-lg font-medium whitespace-nowrap"
+                >
                   Gender:
                 </Label>
                 <Select onValueChange={handleGenderChange}>
@@ -139,9 +171,12 @@ const Page = () => {
               ].map(({ label, type, placeholder, key }, index) => (
                 <div
                   key={index}
-                  className="flex w-full max-w-lg items-center gap-1"
+                  className="flex w-full max-w-lg items-center gap-3"
                 >
-                  <Label htmlFor={key} className="flex-1 text-lg font-medium">
+                  <Label
+                    htmlFor={key}
+                    className="w-32 text-lg font-medium whitespace-nowrap"
+                  >
                     {label}:
                   </Label>
                   <Input
@@ -154,18 +189,6 @@ const Page = () => {
                   />
                 </div>
               ))}
-              <div className="flex w-full max-w-lg items-center gap-1">
-                <Label htmlFor="picture" className="flex-1 text-lg font-medium">
-                  Picture:
-                </Label>
-                <Input
-                  id="picture"
-                  type="file"
-                  onChange={handleFileChange}
-                  accept=".jpg,.png"
-                  className="flex-1 text-lg font-medium p-3"
-                />
-              </div>
             </CardContent>
             <Button
               type="submit"
