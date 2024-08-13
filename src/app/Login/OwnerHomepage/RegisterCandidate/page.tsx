@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import React, { useState } from "react";
+import React, { Component, useState } from "react";
 import Header from "@/components/ui/Components/Header";
 import {
   Select,
@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
+import axios from "axios";
+// import FileUpload from "./FileUpload";
 
 type InputKey = "name" | "id" | "gender" | "position" | "email";
 
@@ -36,6 +38,7 @@ const Page = () => {
     email: "",
   });
 
+  const [file, setFile] = useState<File | undefined>();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setInput((prevInput) => ({
@@ -101,6 +104,34 @@ const Page = () => {
         setSubmitError(null);
       }, 3000);
     }
+  };
+
+  // function handleFileChange(e: React.FormEvent<HTMLInputElement>) {
+  // const target = e.target as HTMLInputElement & {
+  //   files: FileList;
+  // };
+
+  // setFile(target.files[0]);
+  // console.log("file: ", FileList);
+
+  const handleFileChange = (
+    // files: FileList
+    e: React.ChangeEvent<HTMLInputElement>
+    // setPreview: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    const reader = new FileReader();
+
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      if (reader.result) {
+        // setPreview(reader.result as string); // Set the image preview
+      }
+    };
+    const target = e.target as HTMLInputElement & {
+      files: FileList;
+    };
+    console.log("Reader ready state: ", reader.readyState);
+    reader.readAsDataURL(target.files[0]); // Read the file as a data URL (base64 encoded image)
+    // console.log(reader.readAsDataURL(target.files[0]));
   };
 
   return (
@@ -189,6 +220,25 @@ const Page = () => {
                   />
                 </div>
               ))}
+              <div className="flex w-full max-w-lg items-center gap-3">
+                <Label
+                  htmlFor="picture"
+                  className="w-32 text-lg font-medium whitespace-nowrap"
+                >
+                  Picture:
+                </Label>
+                <Input
+                  id="picture"
+                  type="file"
+                  onChange={handleFileChange}
+                  accept=".jpg,.png"
+                  className="max-w-xs flex justify-center items-center h-[298px]" // "flex-1 text-lg font-medium h-[298px]"
+                />
+                {/* <div>
+                  <Input type="file" onChange={handleFileChange} /> */}
+                {/* <button onClick={this.onFileUpload}>Upload!</button> */}
+                {/* </div> */}
+              </div>
             </CardContent>
             <Button
               type="submit"

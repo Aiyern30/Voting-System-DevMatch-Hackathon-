@@ -5,8 +5,6 @@ const pool = new Pool({
 });
 
 export const getCandidates = async () => {
-  // const { rows } = await pool.query('SELECT * FROM Candidate'); // Replace 'Candidate' with your actual table name
-  // return rows; // Return the fetched rows
   try {
     const { rows } = await pool.query("SELECT * FROM Candidate");
     return rows;
