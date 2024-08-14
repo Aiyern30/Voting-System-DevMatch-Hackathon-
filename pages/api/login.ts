@@ -20,8 +20,9 @@ export default async function handler(
       if (result.rows.length > 0) {
         const hashedPassword = result.rows[0].ownerpassword;
 
-        console.log("Entered Password:", password);
-        console.log("Hashed Password:", hashedPassword);
+        // console.log("Entered Password:", password);
+        // console.log("p: ", password);
+        // console.log("Hashed Password:", hashedPassword);
 
         const isMatch = await compare(password, hashedPassword);
 
