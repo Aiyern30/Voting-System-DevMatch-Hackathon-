@@ -8,7 +8,7 @@ const page = () => {
   return (
     <div>
       <Header></Header>
-      <div>
+      <div className="top-[10px]">
         <Home />
       </div>
       <div className="bg-[#DBB5B5] h-16 mt-20"></div>
