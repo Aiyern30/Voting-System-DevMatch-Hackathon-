@@ -1,6 +1,6 @@
 "use client";
 
-import Header from "@/components/ui/Components/Header";
+import Header from "@/components/ui/Components/HostHeader";
 import {
   Table,
   TableCaption,
@@ -23,31 +23,31 @@ interface Candidate {
 const Page = () => {
   const [candidates, setCandidates] = useState<Candidate[]>([]); // Specify the type for state
 
-  useEffect(() => {
-    const fetchCandidates = async () => {
-      try {
-        const fetchedCandidates = await getCandidates(); // Fetch candidates
-        console.log("Fetched Candidates:", fetchedCandidates);
-        setCandidates(fetchedCandidates); // Set fetched candidates to state
-      } catch (error) {
-        console.error("Error fetching candidates:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchCandidates = async () => {
+  //     try {
+  //       const fetchedCandidates = await getCandidates(); // Fetch candidates
+  //       console.log("Fetched Candidates:", fetchedCandidates);
+  //       setCandidates(fetchedCandidates); // Set fetched candidates to state
+  //     } catch (error) {
+  //       console.error("Error fetching candidates:", error);
+  //     }
+  //   };
 
-    fetchCandidates(); // Call the fetch function
-  }, []); // Runs once when the component mounts
+  //   fetchCandidates(); // Call the fetch function
+  // }, []); // Runs once when the component mounts
 
   const handleRemoveCandidate = async (id: string) => {
-    try {
-      await removeCandidate(parseInt(id)); // Remove candidate from the blockchain
-      // Update local state to remove candidate
-      setCandidates((prevCandidates) =>
-        prevCandidates.filter((candidate) => candidate.id !== id)
-      );
-      console.log("Candidate removed successfully");
-    } catch (error) {
-      console.error("Error removing candidate:", error);
-    }
+    // try {
+    //   await removeCandidate(parseInt(id)); // Remove candidate from the blockchain
+    //   // Update local state to remove candidate
+    //   setCandidates((prevCandidates) =>
+    //     prevCandidates.filter((candidate) => candidate.id !== id)
+    //   );
+    //   console.log("Candidate removed successfully");
+    // } catch (error) {
+    //   console.error("Error removing candidate:", error);
+    // }
   };
 
   return (

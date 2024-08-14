@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import Header from "@/components/ui/Components/Header";
@@ -23,8 +24,42 @@ const Page: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const router = useRouter();
   const { setIsLoggedIn } = useAuth();
+  const [isPasscodeRequested, setIsPasscodeRequested] =
+    useState<boolean>(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const [abi, setABI] = useState(null);
+  const [bytecode, setBytecode] = useState(null);
+  const [deployedAddress, setDeployedAddress] = useState("");
+  const [contractReader, setContractReader] = useState(null);
+  const [contractWriter, setContractWriter] = useState(null);
+
+  // Fetch abi, bytecode & deployed contract address (if available)
+  useEffect(() => {
+    async function fetchAbiAndBytecode() {
+      try {
+        const abiResponse = await fetch("/contractABI.json");
+        const abiFile = await abiResponse.json();
+        setABI(abiFile.abi);
+        console.log(abi);
+
+        const bytecodeResponse = await fetch("/contractBytecode.json");
+        const bytecodeFile = await bytecodeResponse.json();
+        setBytecode(bytecodeFile.bytecode);
+      } catch (error) {
+        console.error("Error fetching JSON files:", error);
+      }
+    }
+
+    // Retrieve the deployed address from local storage when the component mounts
+    const savedAddress = sessionStorage.getItem("deployedAddress");
+    if (savedAddress) {
+      setDeployedAddress(savedAddress);
+    }
+
+    fetchAbiAndBytecode();
+  }, []);
+
+  const handleHostLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await fetch("/api/login", {
@@ -47,7 +82,7 @@ const Page: React.FC = () => {
         setPassword("");
 
         setTimeout(() => {
-          router.push("Login/OwnerHomepage");
+          router.push("/Login/OwnerHomepage");
         }, 3000); // Delay the redirect
       } else {
         const data = await response.json();
@@ -62,6 +97,10 @@ const Page: React.FC = () => {
         setLoginError(null);
       }, 3000);
     }
+  };
+
+  const handleVoterLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
   };
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,20 +148,51 @@ const Page: React.FC = () => {
     }
   };
 
+  const handleEmailReq = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/requestPasscode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setIsPasscodeRequested(true); // Allow passcode input to be editable
+      } else {
+        setLoginError("Failed to request passcode. Please try again.");
+        setTimeout(() => {
+          setLoginError(null);
+        }, 3000);
+      }
+    } catch (error) {
+      setLoginError("An error occurred. Please try again.");
+      setTimeout(() => {
+        setLoginError(null);
+      }, 3000);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-grow flex items-center justify-center pt-10">
-        <Tabs defaultValue="Login" className="">
-          <TabsList>
-            <TabsTrigger value="Login">Account</TabsTrigger>
-            <TabsTrigger value="Register">Register</TabsTrigger>
+        <Tabs defaultValue="Voter" className="">
+          <TabsList className=" w-[200px]">
+            <TabsTrigger className="w-full" value="Voter">
+              Voter
+            </TabsTrigger>
+            <TabsTrigger className="w-full" value="hostLogin">
+              Host
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="Login" className="flex justify-center">
+          <TabsContent value="Voter" className="flex justify-center">
             <Card className="w-[600px] bg-[#987070] rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-white font-bold text-center">
-                  Welcome Back!
+                  Enter your email to request passcode
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center h-full pb-20">
@@ -138,7 +208,7 @@ const Page: React.FC = () => {
                     <AlertDescription>{loginSuccess}</AlertDescription>
                   </Alert>
                 )}
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleVoterLogin}>
                   <div className="grid w-full items-center gap-4">
                     <div className="flex space-y-1.5 relative w-full">
                       <Input
@@ -146,7 +216,7 @@ const Page: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email Address"
-                        className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
+                        className=" pl-24 pr-[120px] rounded-xl py-9 bg-[#D9D9D9] text-black w-full overflow-auto"
                       />
                       <Image
                         src={"/gmail.png"}
@@ -155,15 +225,27 @@ const Page: React.FC = () => {
                         height={45}
                         className="absolute top-2 left-7"
                       />
+                      <Button
+                        onClick={handleEmailReq}
+                        className=" absolute right-2.5 top-2 bg-[#D9D9D9] text-black rounded-full hover:bg-white p-5"
+                      >
+                        Request
+                      </Button>
                     </div>
+
                     <div className="flex space-y-1.5 relative w-full">
                       <Input
                         id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
+                        placeholder="Passcode"
+                        className={`pl-24 rounded-xl py-9 bg-[#D9D9D9] text-black w-full ${
+                          !isPasscodeRequested
+                            ? "cursor-not-allowed"
+                            : "cursor-auto"
+                        }`}
+                        readOnly={!isPasscodeRequested}
                       />
                       <Image
                         src={"/lock.png"}
@@ -184,7 +266,7 @@ const Page: React.FC = () => {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="Register" className="flex justify-center">
+          {/* <TabsContent value="Register" className="flex justify-center">
             <Card className="w-[600px] bg-[#987070] rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-white font-bold text-center">
@@ -212,7 +294,7 @@ const Page: React.FC = () => {
                         value={registerEmail}
                         onChange={(e) => setRegisterEmail(e.target.value)}
                         placeholder="Email Address"
-                        className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
+                        className="pl-24 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
                       <Image
                         src={"/gmail.png"}
@@ -229,7 +311,7 @@ const Page: React.FC = () => {
                         value={registerPassword}
                         onChange={(e) => setRegisterPassword(e.target.value)}
                         placeholder="Password"
-                        className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
+                        className="pl-24 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
                       <Image
                         src={"/lock.png"}
@@ -246,7 +328,74 @@ const Page: React.FC = () => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm Password"
-                        className="pl-28 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
+                        className="pl-24 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
+                      />
+                      <Image
+                        src={"/lock.png"}
+                        alt={""}
+                        width={45}
+                        height={45}
+                        className="p-none absolute top-2 left-7"
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      className="mx-auto bg-[#D9D9D9] text-black rounded-full hover:bg-white p-5"
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent> */}
+          <TabsContent value="hostLogin" className="flex justify-center">
+            <Card className="w-[600px] bg-[#987070] rounded-3xl">
+              <CardHeader>
+                <CardTitle className="text-white font-bold text-center">
+                  Host login
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center justify-center h-full pb-20">
+                {loginError && (
+                  <Alert className="mb-4 bg-red-200">
+                    <AlertTitle>Heads up!</AlertTitle>
+                    <AlertDescription>{loginError}</AlertDescription>
+                  </Alert>
+                )}
+                {loginSuccess && (
+                  <Alert className="mb-4 bg-green-200">
+                    <AlertTitle>Success!</AlertTitle>
+                    <AlertDescription>{loginSuccess}</AlertDescription>
+                  </Alert>
+                )}
+                <form onSubmit={handleHostLogin}>
+                  <div className="grid w-full items-center gap-4">
+                    <div className="flex space-y-1.5 relative w-full">
+                      <Input
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email Address"
+                        className=" pl-24 pr-[120px] rounded-xl py-9 bg-[#D9D9D9] text-black w-full overflow-auto"
+                      />
+                      <Image
+                        src={"/gmail.png"}
+                        alt={""}
+                        width={45}
+                        height={45}
+                        className="absolute top-2 left-7"
+                      />
+                    </div>
+
+                    <div className="flex space-y-1.5 relative w-full">
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
+                        className="pl-24 rounded-xl py-9 bg-[#D9D9D9] text-black w-full"
                       />
                       <Image
                         src={"/lock.png"}
@@ -260,7 +409,7 @@ const Page: React.FC = () => {
                       type="submit"
                       className="mx-auto bg-[#D9D9D9] text-black rounded-full hover:bg-white p-5"
                     >
-                      Sign Up
+                      Login
                     </Button>
                   </div>
                 </form>

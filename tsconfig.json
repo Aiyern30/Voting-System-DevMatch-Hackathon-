@@ -28,7 +28,8 @@
     ".next/types/**/*.ts",
     "global.d.ts", // Make sure this line is present
     "**/*.d.ts", // This will include all .d.ts files
-    "pages/interact.ts"
+    "pages/interact.ts",
+    "src/app/Login/OwnerHomepage/RegisterCandidate/fileUpload.js"
   ],
   "exclude": ["node_modules"]
 }
