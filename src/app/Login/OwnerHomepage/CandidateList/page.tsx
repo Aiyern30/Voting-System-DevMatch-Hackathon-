@@ -1,6 +1,6 @@
 "use client";
 
-import Header from "@/components/ui/Components/Header";
+import Header from "@/components/ui/Components/HostHeader";
 import {
   Table,
   TableCaption,
