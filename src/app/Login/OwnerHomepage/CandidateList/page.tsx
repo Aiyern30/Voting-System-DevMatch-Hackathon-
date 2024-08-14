@@ -166,16 +166,26 @@ const Page = () => {
   return (
     <div>
       <Header />
-      <div className="p-5 pb-0">Voting Code: ADSDSDDS</div>
+      <div className="p-5 pb-0 flex justify-end items-center">
+        {/* <div>Voting Code: ADSDSDDS</div> */}
+        <a href="/Login/OwnerHomepage/RegisterCandidate">
+          <Button
+            variant="ghost"
+            className="bg-[#987070] text-white border border-[#2A2929] ml-auto mx-5 mb-5"
+          >
+            Register Candidate
+          </Button>
+        </a>
+      </div>
 
-      <div className="flex flex-col h-screen  p-10 pt-0">
+      <div className="flex flex-col h-screen p-10 pt-0">
         <Table>
           <TableHeader className="bg-[#C39898]">
             <TableRow>
-              <TableHead className="text-black"></TableHead>
-              <TableHead className="text-black">Number</TableHead>
-              <TableHead className="text-black">Candidate Name</TableHead>
-              <TableHead className="text-black">Vote Count</TableHead>
+              <TableHead className="text-white"></TableHead>
+              <TableHead className="text-white">Number</TableHead>
+              <TableHead className="text-white">Candidate Name</TableHead>
+              <TableHead className="text-white">Vote Count</TableHead>
             </TableRow>
           </TableHeader>
 
