@@ -1,5 +1,4 @@
 import { ethers } from "ethers"; // Use ES6 import syntax
-import { JsonRpcProvider } from "ethers"; // Directly import JsonRpcProvider
 
 require("dotenv").config(); // Keep this for loading environment variables
 
