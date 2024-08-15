@@ -68,3 +68,9 @@
     background: #f1e5d1;
   }
 }
+
+.no-hover:hover {
+  background-color: current !important;
+  color: current !important;
+  cursor: default !important;
+}
