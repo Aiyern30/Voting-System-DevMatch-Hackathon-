@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../Button";
 import { Avatar, AvatarFallback, AvatarImage } from "../Avatar";
-import { usePathname } from "next/navigation";
+import { usePathname } from "next/navigation"; // Correct import
 import { useAuth } from "@/app/AuthContext"; // Adjust the import path
 import {
   DropdownMenu,
@@ -13,8 +13,21 @@ import {
 } from "@/components/ui/Dropdown-menu";
 
 const Header = () => {
-  const pathname = usePathname();
+  const pathname = usePathname(); // Use usePathname hook to get the pathname
   const { isLoggedIn, loading, logout } = useAuth();
+  
+  // Use state to hold the display path
+  const [displayPath, setDisplayPath] = useState("Home");
+
+  // Use useEffect to update the displayPath whenever pathname changes
+  useEffect(() => {
+    const pathParts = pathname?.split("/").filter(Boolean) || [];
+    if (pathParts.length > 0) {
+      setDisplayPath(pathParts[pathParts.length - 1]); // Always set the last part of the path
+    } else {
+      setDisplayPath("Home"); // Default to "Home" if there's no specific path
+    }
+  }, [pathname]); // Re-run the effect whenever pathname changes
 
   const links = [
     { name: "Home", href: "/" },
@@ -24,7 +37,7 @@ const Header = () => {
     { name: "About Us", href: "/About-us" },
     ...(isLoggedIn ? [{ name: "Vote", href: "/Voter" }] : []),
   ];
-
+  
   return (
     <div className="h-[64px] flex justify-between items-center p-4 shadow-md bg-[#DBB5B5]">
       <div className="flex items-center space-x-4">
@@ -41,7 +54,7 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div>{pathname?.split("/")[1]}</div>
+        <div>{displayPath}</div> {/* Display the correct part of the path */}
       </div>
       <div className="flex items-center space-x-4 cursor-pointer">
         {links.map((link) => (

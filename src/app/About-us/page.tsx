@@ -7,28 +7,28 @@ import Footer from "@/components/ui/Components/Footer";
 
 const Page = () => {
   const items = [
-    { id: 1, picture: "Profile1.png", name: "Hoi Kah Wei", description: "BBK" },
+    { id: 1, picture: "/Profile1.png", name: "Hoi Kah Wei", description: "BBK" },
     {
       id: 2,
-      picture: "Profile1.png",
+      picture: "/Profile1.png",
       name: "Jia Wen",
       description: "football player",
     },
     {
       id: 3,
-      picture: "Profile1.png",
+      picture: "/Profile1.png",
       name: "lee Wei Xuan",
       description: "CEO",
     },
     {
       id: 4,
-      picture: "Profile1.png",
+      picture: "/Profile1.png",
       name: "Ian Gan",
       description: "Full stack developer",
     },
     {
       id: 5,
-      picture: "Profile1.png",
+      picture: "/Profile1.png",
       name: "Eric Kee",
       description: "A clown",
     },

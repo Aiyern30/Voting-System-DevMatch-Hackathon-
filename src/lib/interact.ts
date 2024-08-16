@@ -384,3 +384,29 @@ export async function removeCandidate(id: number) {
     throw error;
   }
 }
+
+// export async function startElection(
+//   weeks: number,
+//   days: number,
+//   hours: number,
+//   minutes: number,
+//   seconds: number
+// ) {
+//   const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL!);
+//   const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY!, provider);
+//   const contract = new ethers.Contract(
+//     process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
+//     contract_abi,
+//     signer
+//   );
+
+//   try {
+//     const tx = await contract.startElection(weeks, days, hours, minutes, seconds);
+//     await tx.wait();
+//     console.log("Election started successfully:", tx);
+//     return tx;
+//   } catch (error) {
+//     console.error("Error calling startElection:", error);
+//     throw error;
+//   }
+// }

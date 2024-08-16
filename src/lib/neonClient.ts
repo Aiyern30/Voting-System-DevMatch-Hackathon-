@@ -16,6 +16,8 @@ const connectToDatabase = async () => {
     isConnected = true;
     console.log("Connected to NeonDB");
   }
+  return client; // Return the client instance after connecting
+
 };
 
 const disconnectFromDatabase = async () => {

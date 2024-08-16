@@ -1,4 +1,5 @@
 "use client";
+import dvs_artifact from '@/DVS/artifacts/contracts/DVS.sol/Voter.json';
 
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
@@ -11,6 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/Alert";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../AuthContext";
 import Footer from "@/components/ui/Components/Footer";
+import { ethers } from 'ethers';
 
 const Page: React.FC = () => {
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -19,6 +21,7 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  console.log("Password",password)
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -32,31 +35,42 @@ const Page: React.FC = () => {
   const [deployedAddress, setDeployedAddress] = useState("");
   const [contractReader, setContractReader] = useState(null);
   const [contractWriter, setContractWriter] = useState(null);
+  const deployContract = async () => {
+    try {
+        if (!window.ethereum) {
+            console.error("Ethereum provider not found.");
+            return;
+        }
 
-  // useEffect(() => {
-  //   async function fetchAbiAndBytecode() {
-  //     try {
-  //       const abiResponse = await fetch("/contractABI.json");
-  //       const abiFile = await abiResponse.json();
-  //       setABI(abiFile.abi);
-  //       console.log("abi", abi);
+        // Request account access
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-  //       const bytecodeResponse = await fetch("/contractBytecode.json");
-  //       const bytecodeFile = await bytecodeResponse.json();
-  //       setBytecode(bytecodeFile.bytecode);
-  //     } catch (error) {
-  //       console.error("Error fetching JSON files:", error);
-  //     }
-  //   }
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = await provider.getSigner();
 
-  //   // Retrieve the deployed address from local storage when the component mounts
-  //   const savedAddress = sessionStorage.getItem("deployedAddress");
-  //   if (savedAddress) {
-  //     setDeployedAddress(savedAddress);
-  //   }
+        // Check if signer is correctly fetched
+        const address = await signer.getAddress();
+        console.log("Connected account:", address);
 
-  //   fetchAbiAndBytecode();
-  // }, []);
+        const contract = new ethers.ContractFactory(
+            dvs_artifact.abi,
+            dvs_artifact.bytecode,
+            signer
+        );
+
+        const contract_deploy = await contract.deploy();
+
+        await contract_deploy.deployed();
+        
+
+        const deployedAddress = contract_deploy.address;
+        localStorage.setItem('deployed_address', deployedAddress);
+
+        console.log("Contract deployed to address:", deployedAddress);
+    } catch (error) {
+        console.error("Error deploying contract:", error);
+    }
+};
 
   const handleHostLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +89,7 @@ const Page: React.FC = () => {
         setLoginSuccess("Login successful! Redirecting...");
         setIsLoggedIn(true); // Update the login state
         localStorage.setItem("isLoggedIn", "true"); // Store login state in local storage
-
+        deployContract();
         // Clear the input fields
         setEmail("");
         setPassword("");
@@ -100,8 +114,82 @@ const Page: React.FC = () => {
 
   const handleVoterLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    try {
+      const response = await fetch("/api/voterLogin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message);
+        setLoginSuccess(data.message);
+        setIsLoggedIn(true); // Update login state if necessary
+        
+        // Show success message and redirect after 3 seconds
+        setTimeout(() => {
+          router.push('/Login/VoterHomepage'); // Redirect to VoterHomePage
+        }, 3000);
+      } else {
+        const data = await response.json();
+        setLoginError(data.message);
+        setTimeout(() => {
+          setLoginError(null);
+        }, 3000);
+      }
+    } catch (error) {
+      setLoginError("An error occurred. Please try again.");
+      setTimeout(() => {
+        setLoginError(null);
+      }, 3000);
+    }
   };
-  const handleRegister = async (e: React.FormEvent) => {
+
+  const handleEmailReq = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/requestPasscode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        if (data.message.includes("pending")) {
+          setLoginError(data.message);
+          setTimeout(() => {
+            setLoginError(null);
+          }, 3000);
+        } else if (data.message.includes("successful")) {
+          setIsPasscodeRequested(true); // Allow passcode input to be editable
+          setLoginSuccess(data.message);
+          setTimeout(() => {
+            setLoginSuccess(null);
+          }, 3000);
+        }
+      } else {
+        const data = await response.json();
+        setLoginError(data.message);
+        setTimeout(() => {
+          setLoginError(null);
+        }, 3000);
+      }
+    } catch (error) {
+      setLoginError("An error occurred. Please try again.");
+      setTimeout(() => {
+        setLoginError(null);
+      }, 3000);
+    }
+  };
+  
+const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (registerPassword !== confirmPassword) {
       setRegisterError("Passwords do not match.");
@@ -146,34 +234,6 @@ const Page: React.FC = () => {
       }, 3000);
     }
   };
-
-  const handleEmailReq = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/requestPasscode", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (response.ok) {
-        setIsPasscodeRequested(true); // Allow passcode input to be editable
-      } else {
-        setLoginError("Failed to request passcode. Please try again.");
-        setTimeout(() => {
-          setLoginError(null);
-        }, 3000);
-      }
-    } catch (error) {
-      setLoginError("An error occurred. Please try again.");
-      setTimeout(() => {
-        setLoginError(null);
-      }, 3000);
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -188,83 +248,86 @@ const Page: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="Voter" className="flex justify-center">
-            <Card className="w-[600px] bg-[#987070] rounded-3xl">
-              <CardHeader>
-                <CardTitle className="text-white font-bold text-center">
-                  Enter your email to request passcode
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center justify-center h-full pb-20">
-                {loginError && (
-                  <Alert className="mb-4 bg-red-200">
-                    <AlertTitle>Heads up!</AlertTitle>
-                    <AlertDescription>{loginError}</AlertDescription>
-                  </Alert>
-                )}
-                {loginSuccess && (
-                  <Alert className="mb-4 bg-green-200">
-                    <AlertTitle>Success!</AlertTitle>
-                    <AlertDescription>{loginSuccess}</AlertDescription>
-                  </Alert>
-                )}
-                <form onSubmit={handleVoterLogin}>
-                  <div className="grid w-full items-center gap-4">
-                    <div className="flex space-y-1.5 relative w-full">
-                      <Input
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email Address"
-                        className=" pl-24 pr-[120px] rounded-xl py-9 bg-[#D9D9D9] text-black w-full overflow-auto"
-                      />
-                      <Image
-                        src={"/gmail.png"}
-                        alt={""}
-                        width={45}
-                        height={45}
-                        className="absolute top-2 left-7"
-                      />
-                      <Button
-                        onClick={handleEmailReq}
-                        className=" absolute right-2.5 top-2 bg-[#D9D9D9] text-black rounded-full hover:bg-white p-5"
-                      >
-                        Request
-                      </Button>
-                    </div>
+  <Card className="w-[600px] bg-[#987070] rounded-3xl">
+    <CardHeader>
+      <CardTitle className="text-white font-bold text-center">
+        Enter your email to request passcode
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="flex flex-col items-center justify-center h-full pb-20">
+      {loginError && (
+        <Alert className="mb-4 bg-red-200">
+          <AlertTitle>Heads up!</AlertTitle>
+          <AlertDescription>{loginError}</AlertDescription>
+        </Alert>
+      )}
+      {loginSuccess && (
+        <Alert className="mb-4 bg-green-200">
+          <AlertTitle>Success!</AlertTitle>
+          <AlertDescription>{loginSuccess}</AlertDescription>
+        </Alert>
+      )}
+      <form onSubmit={handleVoterLogin}>
+        <div className="grid w-full items-center gap-4">
+          <div className="flex space-y-1.5 relative w-full">
+            <Input
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email Address"
+              className="pl-24 pr-[120px] rounded-xl py-9 bg-[#D9D9D9] text-black w-full overflow-auto"
+            />
+            <Image
+              src={"/gmail.png"}
+              alt={""}
+              width={45}
+              height={45}
+              className="absolute top-2 left-7"
+            />
+            <Button
+              onClick={handleEmailReq}
+              className="absolute right-2.5 top-2 bg-[#D9D9D9] text-black rounded-full hover:bg-white p-5"
+              disabled={isPasscodeRequested} // Disable if passcode is requested or pending
+            >
+              Request
+            </Button>
+          </div>
 
-                    <div className="flex space-y-1.5 relative w-full">
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Passcode"
-                        className={`pl-24 rounded-xl py-9 bg-[#D9D9D9] text-black w-full ${
-                          !isPasscodeRequested
-                            ? "cursor-not-allowed"
-                            : "cursor-auto"
-                        }`}
-                        readOnly={!isPasscodeRequested}
-                      />
-                      <Image
-                        src={"/lock.png"}
-                        alt={""}
-                        width={45}
-                        height={45}
-                        className="absolute top-2 left-7"
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      className="mx-auto bg-[#D9D9D9] text-black rounded-full hover:bg-white p-5"
-                    >
-                      Login
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <div className="flex space-y-1.5 relative w-full">
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Passcode"
+              className={`pl-24 rounded-xl py-9 bg-[#D9D9D9] text-black w-full ${
+                !isPasscodeRequested
+                  ? "cursor-not-allowed"
+                  : "cursor-auto"
+              }`}
+              readOnly={!isPasscodeRequested}
+            />
+            <Image
+              src={"/lock.png"}
+              alt={""}
+              width={45}
+              height={45}
+              className="absolute top-2 left-7"
+            />
+          </div>
+          <Button
+            type="submit"
+            className="mx-auto bg-[#D9D9D9] text-black rounded-full hover:bg-white p-5"
+            disabled={!isPasscodeRequested} // Disable login button if passcode not requested
+          >
+            Login
+          </Button>
+        </div>
+      </form>
+    </CardContent>
+  </Card>
+</TabsContent>
+
           {/* <TabsContent value="Register" className="flex justify-center">
             <Card className="w-[600px] bg-[#987070] rounded-3xl">
               <CardHeader>

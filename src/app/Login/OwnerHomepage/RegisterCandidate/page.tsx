@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/Select";
 import { useRouter } from "next/navigation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/Alert";
+import { contract_reader,contract_writer } from "@/app/load_contract";
 
 // import { v4 as uuidv4 } from "uuid";
 
@@ -30,13 +31,13 @@ const Page = () => {
   const router = useRouter();
   const [input, setInput] = useState<{
     name: string;
-    // id: number;
+    id: string;
     gender: string;
     position: string;
     email: string;
   }>({
     name: "",
-    // id: 0,
+    id: "",
     gender: "",
     position: "",
     email: "",
@@ -83,6 +84,7 @@ const Page = () => {
     e.preventDefault();
 
     const formData = {
+      candidateid: input.id,
       candidateName: input.name,
       candidateGender: input.gender,
       candidatePosition: input.position,
@@ -106,7 +108,7 @@ const Page = () => {
         console.log("data: ", data);
 
         setSubmitSuccess(null);
-
+        await contract_writer.addCandidate(input.name,input.id)
         setTimeout(() => {
           setSubmitError(null),
             setSubmitSuccess("Submit successful!"),
@@ -172,6 +174,11 @@ const Page = () => {
                     label: "Name",
                     type: "text",
                     placeholder: "Enter your name",
+                  },
+                  {
+                    label: "id",
+                    type: "number",
+                    placeholder: "Enter your ID",
                   },
                 ].map(({ label, type, placeholder }, index) => (
                   <div key={index} className="flex w-full items-center gap-3">
