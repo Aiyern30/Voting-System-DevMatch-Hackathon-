@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "@/components/ui/Components/HostHeader";
 import {
   Select,
@@ -15,15 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
-import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
+
+// import { v4 as uuidv4 } from "uuid";
 
 type InputKey = "name" | "id" | "gender" | "position" | "email";
 
 const Page = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
-  const [candidateId, setCandidateId] = useState<string>(uuidv4()); // Generate a new ID initially
-
+  // const [candidateId, setCandidateId] = useState<string>(uuidv4()); // Generate a new ID initially
+  const [cid, setCid] = useState<string | null>(null);
+  const router = useRouter();
   const [input, setInput] = useState<{
     name: string;
     // id: number;
@@ -37,6 +40,28 @@ const Page = () => {
     position: "",
     email: "",
   });
+
+  useEffect(() => {
+    // Fetch the cid from the database
+    const fetchCid = async () => {
+      try {
+        const response = await fetch("/api/getCandidateCid", {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setCid(data.cid); // Assuming the response returns the cid
+        } else {
+          console.log("Failed to fetch cid.");
+        }
+      } catch (error) {
+        console.error("Error fetching cid:", error);
+      }
+    };
+
+    fetchCid();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -61,8 +86,10 @@ const Page = () => {
       candidateGender: input.gender,
       candidatePosition: input.position,
       candidateEmail: input.email,
-      candidateid: candidateId,
+      // candidateid: candidateId,
     };
+
+    console.log("FormData: ", formData);
 
     try {
       const response = await fetch("/api/setCandidate", {
@@ -72,6 +99,7 @@ const Page = () => {
         },
         body: JSON.stringify({ action: "register", formData }),
       });
+      console.log("I run after fetch", formData);
 
       if (response.ok) {
         const data = await response.json();
@@ -79,20 +107,23 @@ const Page = () => {
         setSubmitSuccess("Submit successful!");
 
         // Clear the input fields
-        setInput({
-          name: "",
-          // id: 0,
-          gender: "",
-          position: "",
-          email: "",
-        });
-        setCandidateId(uuidv4()); // Generate a new ID for the next entry
+        // setInput({
+        //   name: "",
+        //   // id: 0,
+        //   gender: "",
+        //   position: "",
+        //   email: "",
+        // });
+
+        //routo to candiate list page
 
         setTimeout(() => {
+          router.push("/Login/OwnerHomepage/CandidateList");
           setSubmitSuccess(null);
         }, 3000);
       } else {
         const data = await response.json();
+        console.log("data for submit: ", data);
         setSubmitError(data.message);
         setTimeout(() => {
           setSubmitError(null);
@@ -151,7 +182,7 @@ const Page = () => {
                       id={label.toLowerCase()}
                       placeholder={placeholder}
                       className="flex-1"
-                      value={input[label.toLowerCase() as InputKey]}
+                      // value={input[label.toLowerCase() as InputKey]}
                       onChange={handleChange}
                     />
                   </div>
@@ -208,6 +239,7 @@ const Page = () => {
                 variant={"default"}
                 className="w-full mt-6 mx-auto bg-[#C39898] text-white rounded-full hover:bg-[#a76e6e] p-4"
                 // className="flex mx-auto bg-[#C39898] text-white rounded-full hover:bg-white hover:text-black p-5"
+                onClick={handleSubmit}
               >
                 Register
               </Button>

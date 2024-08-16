@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/Table";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { getCandidates } from "@/lib/candidate";
+import { useRouter } from "next/navigation";
+// import { getCandidates } from "@/lib/candidate";
 // import { getCandidates } from "../../../../../pages/interact";
 
 interface Candidate {
@@ -47,7 +48,7 @@ const Page = () => {
 
         // Map API response to the Candidate interface
         const mappedCandidates: Candidate[] = data.map((item: any) => ({
-          id: item.candidateid,
+          id: item.cid,
           name: item.candidatename,
           email: item.candidateemail,
           gender: item.candidategender,
@@ -65,21 +66,21 @@ const Page = () => {
   }, []); // Runs whenever candidates changes
 
   const handleCheckboxChange = (id: string) => {
-    setSelectedCandidates((prevSelected) =>
-      prevSelected.includes(id)
+    // setSelectedCandidates((prevSelected) =>
+    //   prevSelected.includes(id)
+    //     ? prevSelected.filter((candidateId) => candidateId !== id)
+    //     : [...prevSelected, id]
+    // );
+    setSelectedCandidates((prevSelected) => {
+      const newSelection = prevSelected.includes(id)
         ? prevSelected.filter((candidateId) => candidateId !== id)
-        : [...prevSelected, id]
-    );
+        : [...prevSelected, id];
+
+      return newSelection;
+    });
   };
 
   const handleRemoveSelected = async () => {
-    // setCandidates((prevCandidates) =>
-    //   prevCandidates.filter(
-    //     (candidate) => !selectedCandidates.includes(candidate.id)
-    //   )
-    // );
-    // setSelectedCandidates([]); // Clear selection after removal
-
     try {
       const response = await fetch("/api/setCandidate", {
         method: "POST",
@@ -88,7 +89,7 @@ const Page = () => {
         },
         body: JSON.stringify({
           action: "delete",
-          ids: selectedCandidates,
+          formData: { ids: selectedCandidates },
         }),
       });
       if (!response.ok) {
@@ -145,7 +146,7 @@ const Page = () => {
                     checked={selectedCandidates.includes(candidate.id)}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell className="font-medium">{candidate.id}</TableCell>
                 <TableCell>{candidate.name}</TableCell>
                 <TableCell>{candidate.voteCount}</TableCell>
               </TableRow>

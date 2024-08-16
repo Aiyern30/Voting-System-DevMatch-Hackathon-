@@ -69,67 +69,69 @@ import { connectToDatabase, client } from "@/lib/neonClient";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
-    const {
-      action,
-      candidateName,
-      candidateGender,
-      candidatePosition,
-      candidateEmail,
-      candidateid,
-      ids,
-    } = req.body;
+    const { action, formData } = req.body;
+    console.log("Received formData inside api:", formData); // Log the received data
+    console.log("Received action inside api:", action);
+    // const {
+    //   // action,
+    //   candidateName,
+    //   candidateGender,
+    //   candidatePosition,
+    //   candidateEmail,
+    //   // candidateid,
+    //   ids,
+    // } = req.body;
 
     try {
       await connectToDatabase();
 
       if (action === "register") {
-        console.log(
-          "Data received for registration: ",
-          candidateName,
-          candidateGender,
-          candidatePosition,
-          candidateEmail,
-          candidateid
-        );
-
-        const existingUserQuery =
-          "SELECT * FROM Candidate WHERE candidateid = $1";
-        const existingUserValues = [candidateid];
-        const existingUserResult = await client.query(
-          existingUserQuery,
-          existingUserValues
-        );
-
-        if (existingUserResult.rows.length > 0) {
-          return res.status(400).json({ message: "Candidate already exists." });
+        //debug
+        if (
+          !formData ||
+          !formData.candidateName ||
+          !formData.candidateGender ||
+          !formData.candidatePosition ||
+          !formData.candidateEmail
+        ) {
+          return res.status(400).json({ message: "Missing required fields." });
         }
 
-        const insertQuery =
-          "INSERT INTO Candidate (candidateName, candidateGender, candidatePosition, candidateEmail, candidateid) VALUES ($1, $2, $3, $4, $5)";
+        const insertQuery = `
+          INSERT INTO Candidate (candidateName, candidateGender, candidatePosition, candidateEmail)
+          VALUES ($1, $2, $3, $4) RETURNING cid
+        `;
+
         const insertValues = [
-          candidateName,
-          candidateGender,
-          candidatePosition,
-          candidateEmail,
-          candidateid,
+          formData.candidateName,
+          formData.candidateGender,
+          formData.candidatePosition,
+          formData.candidateEmail,
         ];
-        await client.query(insertQuery, insertValues);
 
-        return res
-          .status(201)
-          .json({ message: "Candidate registered successfully!" });
+        // await client.query(insertQuery, insertValues);
+        const result = await client.query(insertQuery, insertValues);
+
+        return res.status(201).json({
+          message: "Candidate registered successfully!",
+          cid: result.rows[0].cid, // Return the generated cid }
+        });
       } else if (action === "delete") {
-        console.log("Data received for deletion: ", ids);
+        console.log("Data received for deletion: ", formData.ids);
 
-        if (!Array.isArray(ids) || ids.length === 0) {
+        if (!Array.isArray(formData.ids) || formData.ids.length === 0) {
           return res
             .status(400)
             .json({ message: "No candidate IDs provided for deletion." });
         }
 
-        const deleteQuery = "DELETE FROM Candidate WHERE candidateid = ANY($1)";
-        const deleteValues = [ids];
+        const deleteQuery = "DELETE FROM Candidate WHERE cid = ANY($1)";
+        const deleteValues = [formData.ids];
+        console.log("deleteValues in api: ", formData.ids);
+
         await client.query(deleteQuery, deleteValues);
+
+        console.log("res in dlt: ", res);
 
         return res
           .status(200)
@@ -138,7 +140,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(400).json({ message: "Invalid action specified." });
       }
     } catch (error) {
-      console.error("Error processing request:", error);
+      // console.error("Error processing request:", error);
       return res
         .status(500)
         .json({ message: "An error occurred. Please try again." });

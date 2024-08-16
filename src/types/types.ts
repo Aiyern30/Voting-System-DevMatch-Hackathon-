@@ -13,5 +13,5 @@ export interface Candidate {
   candidategender: string; // Match the exact property name
   candidateposition: string; // Match the exact property name
   candidateemail: string; // Match the exact property name
-  candidatepicture: string;
+  // candidatepicture: string;
 }
