@@ -15,3 +15,4 @@ export interface Candidate {
   candidateemail: string; // Match the exact property name
   // candidatepicture: string;
 }
+

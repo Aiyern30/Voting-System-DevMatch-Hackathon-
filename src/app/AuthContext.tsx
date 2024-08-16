@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -16,6 +18,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
     const storedLoginState = localStorage.getItem("isLoggedIn");
@@ -29,10 +32,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = () => {
-    setLoading(true); // Set loading to true when logging out
-    localStorage.removeItem("isLoggedIn"); // Clear the login state from local storage
-    setIsLoggedIn(false); // Update the login state
-    setLoading(false); // Set loading back to false after logout
+    setLoading(true); 
+    localStorage.removeItem("isLoggedIn"); 
+    setIsLoggedIn(false); 
+    setLoading(false);
+    router.push("/Login")
   };
 
   return (
