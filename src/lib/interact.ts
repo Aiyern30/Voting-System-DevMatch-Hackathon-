@@ -1,6 +1,8 @@
 import { ethers } from "ethers"; // Use ES6 import syntax
 
-require("dotenv").config(); // Keep this for loading environment variables
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const contract_abi = [
   {
