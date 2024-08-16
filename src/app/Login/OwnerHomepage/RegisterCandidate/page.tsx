@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { useRouter } from "next/navigation";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/Alert";
 
 // import { v4 as uuidv4 } from "uuid";
 
@@ -86,7 +87,6 @@ const Page = () => {
       candidateGender: input.gender,
       candidatePosition: input.position,
       candidateEmail: input.email,
-      // candidateid: candidateId,
     };
 
     console.log("FormData: ", formData);
@@ -104,22 +104,13 @@ const Page = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("data: ", data);
-        setSubmitSuccess("Submit successful!");
 
-        // Clear the input fields
-        // setInput({
-        //   name: "",
-        //   // id: 0,
-        //   gender: "",
-        //   position: "",
-        //   email: "",
-        // });
-
-        //routo to candiate list page
+        setSubmitSuccess(null);
 
         setTimeout(() => {
-          router.push("/Login/OwnerHomepage/CandidateList");
-          setSubmitSuccess(null);
+          setSubmitError(null),
+            setSubmitSuccess("Submit successful!"),
+            router.push("/Login/OwnerHomepage/CandidateList");
         }, 3000);
       } else {
         const data = await response.json();
@@ -157,6 +148,19 @@ const Page = () => {
       <Header />
       <div className="flex h-full top-12 justify-center items-center bg-transparent shadow-none relative">
         <Card className="bg-white border border-gray-200 shadow-lg rounded-lg">
+          {submitError && (
+            <Alert className="mb-4 bg-red-200">
+              <AlertTitle>Oops!</AlertTitle>
+              <AlertDescription>{submitError}</AlertDescription>
+            </Alert>
+          )}
+          {submitSuccess && (
+            <Alert className="mb-4 bg-green-200">
+              <AlertTitle>Success!</AlertTitle>
+              <AlertDescription>{submitSuccess}</AlertDescription>
+            </Alert>
+          )}
+
           <CardContent className="p-8">
             <h1 className="text-2xl font-bold mb-6 text-center">
               Candidate Registration
