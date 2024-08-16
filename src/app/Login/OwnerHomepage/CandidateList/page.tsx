@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { useRouter } from "next/navigation";
-// import { getCandidates } from "@/lib/candidate";
+import { getCandidates } from "@/lib/candidate";
 // import { getCandidates } from "../../../../../pages/interact";
 
 interface Candidate {
