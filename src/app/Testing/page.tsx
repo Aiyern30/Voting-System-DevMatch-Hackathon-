@@ -13,7 +13,7 @@ import {
   getElection_status,
   getCandidates_votecount,
   getResetElection_count,
-} from "../../../pages/interact"; // Adjust the path accordingly
+} from "../../lib/interact"; // Adjust the path accordingly
 
 const Page: React.FC = () => {
   const [owners, setOwners] = useState<Owner[]>([]);

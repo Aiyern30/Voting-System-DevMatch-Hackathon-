@@ -35,7 +35,7 @@
     "dotenv": "^16.4.5",
     "elliptic": "^6.5.7",
     "embla-carousel-react": "^8.1.8",
-    "ethers": "^6.13.2",
+    "ethers": "^4.0.0",
     "hardhat": "^2.3.3",
     "lucide-react": "^0.424.0",
     "mongodb": "^6.8.0",
