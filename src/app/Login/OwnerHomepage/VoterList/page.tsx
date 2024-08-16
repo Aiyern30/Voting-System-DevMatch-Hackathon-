@@ -305,7 +305,7 @@ const Page = () => {
     setShowDropdown(false);
   };
 
-  const handleFilterClear = (status: string) => {
+  const handleFilterClear = () => {
     setSelectedFilters([]);
     // Hide the dropdown after selecting an option
     setShowDropdown(false);
@@ -408,7 +408,7 @@ const Page = () => {
               Filter
             </Button>
             {showDropdown && (
-              <div className="absolute top-10 mt-2 left-0 w-48 bg-white border border-gray-300 rounded shadow-lg z-10 w-full">
+              <div className="absolute top-10 mt-2 left-0  bg-white border border-gray-300 rounded shadow-lg z-10 w-full">
                 {statusOptions.map((status) => (
                   <label key={status} className="flex items-center p-2">
                     <Checkbox
