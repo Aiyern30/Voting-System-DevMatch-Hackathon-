@@ -1,6 +1,8 @@
 import { ethers } from "ethers"; // Use ES6 import syntax
 
-require("dotenv").config(); // Keep this for loading environment variables
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const contract_abi = [
   {
@@ -214,9 +216,11 @@ if (!process.env.NEXT_PUBLIC_API_URL) {
 }
 
 // Initialize the provider
-let provider: ethers.JsonRpcProvider; // Use providers namespace correctly
+let provider: ethers.providers.JsonRpcProvider; // Use providers namespace correctly
 try {
-  provider = new ethers.JsonRpcProvider(process.env.NEXT_PUBLIC_API_URL);
+  provider = new ethers.providers.JsonRpcProvider(
+    process.env.NEXT_PUBLIC_API_URL
+  );
 } catch (error: unknown) {
   if (error instanceof Error) {
     throw new Error("Provider initialization failed: " + error.message);

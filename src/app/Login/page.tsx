@@ -33,31 +33,30 @@ const Page: React.FC = () => {
   const [contractReader, setContractReader] = useState(null);
   const [contractWriter, setContractWriter] = useState(null);
 
-  // Fetch abi, bytecode & deployed contract address (if available)
-  useEffect(() => {
-    async function fetchAbiAndBytecode() {
-      try {
-        const abiResponse = await fetch("/contractABI.json");
-        const abiFile = await abiResponse.json();
-        setABI(abiFile.abi);
-        console.log(abi);
+  // useEffect(() => {
+  //   async function fetchAbiAndBytecode() {
+  //     try {
+  //       const abiResponse = await fetch("/contractABI.json");
+  //       const abiFile = await abiResponse.json();
+  //       setABI(abiFile.abi);
+  //       console.log("abi", abi);
 
-        const bytecodeResponse = await fetch("/contractBytecode.json");
-        const bytecodeFile = await bytecodeResponse.json();
-        setBytecode(bytecodeFile.bytecode);
-      } catch (error) {
-        console.error("Error fetching JSON files:", error);
-      }
-    }
+  //       const bytecodeResponse = await fetch("/contractBytecode.json");
+  //       const bytecodeFile = await bytecodeResponse.json();
+  //       setBytecode(bytecodeFile.bytecode);
+  //     } catch (error) {
+  //       console.error("Error fetching JSON files:", error);
+  //     }
+  //   }
 
-    // Retrieve the deployed address from local storage when the component mounts
-    const savedAddress = sessionStorage.getItem("deployedAddress");
-    if (savedAddress) {
-      setDeployedAddress(savedAddress);
-    }
+  //   // Retrieve the deployed address from local storage when the component mounts
+  //   const savedAddress = sessionStorage.getItem("deployedAddress");
+  //   if (savedAddress) {
+  //     setDeployedAddress(savedAddress);
+  //   }
 
-    fetchAbiAndBytecode();
-  }, []);
+  //   fetchAbiAndBytecode();
+  // }, []);
 
   const handleHostLogin = async (e: React.FormEvent) => {
     e.preventDefault();
