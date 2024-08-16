@@ -1,56 +1,120 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import Header from "@/components/ui/Components/HostHeader";
 import {
   Table,
-  TableCaption,
   TableHeader,
   TableRow,
   TableHead,
   TableBody,
   TableCell,
 } from "@/components/ui/Table";
-import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { useRouter } from "next/navigation";
+// import { getCandidates } from "@/lib/candidate";
+// import { getCandidates } from "../../../../../pages/interact";
 
 interface Candidate {
-  id: string;
-  name: string;
-  voteCount: string;
+  id: string; // or use candidateid if preferred
+  name: string; // or use candidatename if preferred
+  email?: string; // Add optional properties if needed
+  gender?: string;
+  position?: string;
+  voteCount?: string; // Include other properties if needed
 }
 
 const Page = () => {
-  const [candidates, setCandidates] = useState<Candidate[]>([
-    { id: "1", name: "Alice", voteCount: "10" },
-    { id: "2", name: "Bob", voteCount: "15" },
-    { id: "3", name: "Charlie", voteCount: "7" },
-  ]);
-
+  const [candidates, setCandidates] = useState<Candidate[]>([]); // Initialize state with empty array
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const response = await fetch("/api/getCandidates", {
+          method: "GET",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok: ${response.statusText}`
+          );
+        }
+        const data: Candidate[] = await response.json();
+
+        // Map API response to the Candidate interface
+        const mappedCandidates: Candidate[] = data.map((item: any) => ({
+          id: item.cid,
+          name: item.candidatename,
+          email: item.candidateemail,
+          gender: item.candidategender,
+          position: item.candidateposition,
+          voteCount: item.voteCount || "0", // Adjust if voteCount is not part of the response
+        }));
+
+        setCandidates(mappedCandidates);
+      } catch (error) {
+        setError((error as Error).message);
+      }
+    };
+
+    fetchCandidates(); // Call the fetch function when the component mounts
+  }, []); // Runs whenever candidates changes
 
   const handleCheckboxChange = (id: string) => {
-    setSelectedCandidates((prevSelected) =>
-      prevSelected.includes(id)
+    // setSelectedCandidates((prevSelected) =>
+    //   prevSelected.includes(id)
+    //     ? prevSelected.filter((candidateId) => candidateId !== id)
+    //     : [...prevSelected, id]
+    // );
+    setSelectedCandidates((prevSelected) => {
+      const newSelection = prevSelected.includes(id)
         ? prevSelected.filter((candidateId) => candidateId !== id)
-        : [...prevSelected, id]
-    );
+        : [...prevSelected, id];
+
+      return newSelection;
+    });
   };
 
-  const handleRemoveSelected = () => {
-    setCandidates((prevCandidates) =>
-      prevCandidates.filter(
-        (candidate) => !selectedCandidates.includes(candidate.id)
-      )
-    );
-    setSelectedCandidates([]); // Clear selection after removal
+  const handleRemoveSelected = async () => {
+    try {
+      const response = await fetch("/api/setCandidate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "delete",
+          formData: { ids: selectedCandidates },
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(data.message); // Handle success message
+
+      // Remove deleted candidates from state
+      setCandidates((prevCandidates) =>
+        prevCandidates.filter(
+          (candidate) => !selectedCandidates.includes(candidate.id)
+        )
+      );
+      setSelectedCandidates([]); // Clear selection after removal
+    } catch (error) {
+      setError((error as Error).message);
+    }
   };
 
   return (
     <div>
       <Header />
       <div className="p-5 pb-0 flex justify-end items-center">
-        {/* <div>Voting Code: ADSDSDDS</div> */}
         <a href="/Login/OwnerHomepage/RegisterCandidate">
           <Button
             variant="ghost"
@@ -66,7 +130,7 @@ const Page = () => {
           <TableHeader className="bg-[#C39898]">
             <TableRow>
               <TableHead className="text-white"></TableHead>
-              <TableHead className="text-white">Number</TableHead>
+              <TableHead className="text-white">Id</TableHead>
               <TableHead className="text-white">Candidate Name</TableHead>
               <TableHead className="text-white">Vote Count</TableHead>
             </TableRow>
@@ -82,7 +146,7 @@ const Page = () => {
                     checked={selectedCandidates.includes(candidate.id)}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell className="font-medium">{candidate.id}</TableCell>
                 <TableCell>{candidate.name}</TableCell>
                 <TableCell>{candidate.voteCount}</TableCell>
               </TableRow>
@@ -93,8 +157,8 @@ const Page = () => {
         <div className="mt-4 flex justify-center">
           <Button
             variant="destructive"
-            onClick={handleRemoveSelected} // Remove selected candidates
-            disabled={selectedCandidates.length === 0} // Disable if no candidates selected
+            onClick={handleRemoveSelected}
+            disabled={selectedCandidates.length === 0}
           >
             Remove Selected
           </Button>
