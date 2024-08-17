@@ -26,7 +26,10 @@ export default async function handler(
               "Your account is still pending. Please wait for verification.",
           });
         } else if (voter.status === "verified") {
-          res.status(200).json({ message: "Passcode request is successful." });
+          res.status(200).json({
+            message:
+              "Passcode is verified, please checkout our email (PEYouth) for the passcode.",
+          });
         } else {
           res.status(404).json({ message: "Voter status is incorrect." });
         }
