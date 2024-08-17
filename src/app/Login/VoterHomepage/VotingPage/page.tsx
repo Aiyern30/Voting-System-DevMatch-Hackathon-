@@ -24,28 +24,6 @@ interface Candidate {
 }
 
 const Page = () => {
-  // const candidates = [
-  //   {
-  //     name: "Soon Wooi Yik",
-  //     position: "Manager",
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  //   {
-  //     name: "Ian",
-  //     position: "Developer",
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  //   {
-  //     name: "Ivan",
-  //     position: "Designer",
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  //   {
-  //     name: "Ivy",
-  //     position: "QA Engineer",s
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  // ];
   const [candidates, setCandidates] = useState<Candidate[]>([]); // Initialize state with empty array
   const [error, setError] = useState<string | null>(null);
 
@@ -117,7 +95,8 @@ const Page = () => {
 
   const handleVote = async (candidate: Candidate) => {
     try {
-      const response = await fetch("/api/setCandidate", {
+      //update the vote countof candidate
+      const canResponse = await fetch("/api/setCandidate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,10 +107,32 @@ const Page = () => {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to increment vote: ${response.statusText}`);
+      //change the voter status to voted
+      const voteRsponse = await fetch("/api/voter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "updateStatus",
+          formData: {
+            // ids: [candidate.id],  <--success to change the status but the passing req.body is candidate der id. I want voter index
+            //ian help me pass the login der user index(id), index is name in db, ids is the req to api
+            ids: pendingVoters.map((voter) => voter.index), // need to pass the voter.index
+            status: "voted", // The new status you want to set
+          },
+        }),
+      });
+
+      if (!canResponse.ok) {
+        throw new Error(`Failed to increment vote: ${canResponse.statusText}`);
       }
-      console.log();
+
+      if (!voteRsponse.ok) {
+        throw new Error(
+          `Failed to change voter status: ${canResponse.statusText}`
+        );
+      }
 
       // Update the candidate's vote count in the local state
       const updatedCandidates = candidates.map((c) =>

@@ -65,8 +65,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           return res.status(400).json({ message: "No candidate ID provided." });
         }
 
-        console.log("I havnt update");
-
         try {
           const updateQuery = `
             UPDATE candidate
