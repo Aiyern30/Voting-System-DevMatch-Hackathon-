@@ -15,7 +15,7 @@ import {
 const Header = () => {
   const pathname = usePathname(); // Use usePathname hook to get the pathname
   const { isLoggedIn, loading, logout } = useAuth();
-  
+
   // Use state to hold the display path
   const [displayPath, setDisplayPath] = useState("Home");
 
@@ -30,14 +30,14 @@ const Header = () => {
   }, [pathname]); // Re-run the effect whenever pathname changes
 
   const links = [
-    { name: "Home", href: "/" },
-    { name: "Overview", href: "/Overview" },
-    { name: "How it works", href: "/How-it-works" },
-    { name: "Features", href: "/Features" },
-    { name: "About Us", href: "/About-us" },
-    ...(isLoggedIn ? [{ name: "Vote", href: "/Voter" }] : []),
+    // { name: "Home", href: "/" },
+    // { name: "Overview", href: "/Overview" },
+    // { name: "How it works", href: "/How-it-works" },
+    // { name: "Features", href: "/Features" },
+    // { name: "About Us", href: "/About-us" },
+    ...(isLoggedIn ? [{ name: "Vote", href: "/Login/VoterHomepage" }] : []),
   ];
-  
+
   return (
     <div className="h-[64px] flex justify-between items-center p-4 shadow-md bg-[#DBB5B5]">
       <div className="flex items-center space-x-4">

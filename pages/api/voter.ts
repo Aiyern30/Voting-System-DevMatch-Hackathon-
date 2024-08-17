@@ -8,36 +8,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     try {
       await connectToDatabase();
-      if (action === "register") {
-        if (
-          !formData ||
-          !formData.ids ||
-          !formData.voterTac ||
-          !formData.voterName ||
-          !formData.status
-        ) {
-          return res.status(400).json({ message: "Missing required fields." });
-        }
+      // if (action === "register") {
+      //   if (
+      //     !formData ||
+      //     !formData.ids ||
+      //     !formData.voterTac ||
+      //     !formData.voterName ||
+      //     !formData.status
+      //   ) {
+      //     return res.status(400).json({ message: "Missing required fields." });
+      //   }
 
-        const insertQuery = `
-          INSERT INTO Candidate (candidateName, candidateGender, candidatePosition, candidateEmail)
-          VALUES ($1, $2, $3, $4) RETURNING cid
-        `;
+      //   const insertQuery = `
+      //     INSERT INTO Candidate (candidateName, candidateGender, candidatePosition, candidateEmail)
+      //     VALUES ($1, $2, $3, $4) RETURNING cid
+      //   `;
 
-        const insertValues = [
-          formData.candidateName,
-          formData.candidateGender,
-          formData.candidatePosition,
-          formData.candidateEmail,
-        ];
+      //   const insertValues = [
+      //     formData.candidateName,
+      //     formData.candidateGender,
+      //     formData.candidatePosition,
+      //     formData.candidateEmail,
+      //   ];
 
-        const result = await client.query(insertQuery, insertValues);
+      //   const result = await client.query(insertQuery, insertValues);
 
-        return res.status(201).json({
-          message: "Candidate registered successfully!",
-          cid: result.rows[0].cid, // Return the generated cid
-        });
-      } else if (action === "delete") {
+      //   return res.status(201).json({
+      //     message: "Candidate registered successfully!",
+      //     cid: result.rows[0].cid, // Return the generated cid
+      //   });
+      // }
+      if (action === "delete") {
         // console.log("Data received for deletion: ", formData.ids);
 
         if (!Array.isArray(formData.ids) || formData.ids.length === 0) {

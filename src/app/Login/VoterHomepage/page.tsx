@@ -167,7 +167,7 @@
 // export default page;
 
 "use client";
-import Header from "@/components/ui/Components/HostHeader";
+import Header from "@/components/ui/Components/Header";
 import React, { useEffect, useState } from "react";
 import Footer from "@/components/ui/Components/Footer";
 import VotePage from "./VotingPage/page";
