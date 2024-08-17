@@ -14,6 +14,15 @@ import {
 import Header from "@/components/ui/Components/Header";
 import React, { useEffect, useState } from "react";
 
+interface Candidate {
+  id: string; // or use candidateid if preferred
+  name: string; // or use candidatename if preferred
+  email?: string; // Add optional properties if needed
+  gender?: string;
+  position?: string;
+  voteCount?: string; // Include other properties if needed
+}
+
 const Page = () => {
   // const candidates = [
   //   {
@@ -33,10 +42,12 @@ const Page = () => {
   //   },
   //   {
   //     name: "Ivy",
-  //     position: "QA Engineer",
+  //     position: "QA Engineer",s
   //     avatar: "https://github.com/shadcn.png",
   //   },
   // ];
+  const [candidates, setCandidates] = useState<Candidate[]>([]); // Initialize state with empty array
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -90,7 +101,8 @@ const Page = () => {
               <div>{candidate.position}</div>
             </div>
             <Avatar className="absolute -top-6 mx-auto w-[120px] h-[120px]">
-              <AvatarImage src={candidate.avatar} />
+              {/* set candidate.avatar if nessesary */}
+              <AvatarImage src={"https://github.com/shadcn.png"} />
               <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <Button className="bg-[#FF0505] mx-auto absolute bottom-4 px-5 py-3">
@@ -103,4 +115,4 @@ const Page = () => {
   );
 };
 
-export default page;
+export default Page;
