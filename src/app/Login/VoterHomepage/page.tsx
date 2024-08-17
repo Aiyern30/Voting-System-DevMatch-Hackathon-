@@ -185,13 +185,30 @@ const Page = () => {
   useEffect(() => {
     const fetchElectionTime = async () => {
       try {
+        // Check if contract_reader is null or undefined
+        if (!contract_reader) {
+          throw new Error("Contract reader is not available.");
+        }
+
         const data = await contract_reader.getElection_time();
         const timeInSeconds = Number(data); // Ensure it's a number
         localStorage.setItem("election_time", timeInSeconds.toString());
         setElectionTime(timeInSeconds);
-      } catch (error) {
+      } catch (error: any) {
+        // Handle error of type 'any'
         console.error("Error fetching election time:", error);
-        setError("Failed to fetch election time.");
+
+        // Check the specific error message at different levels
+        const errorMessage =
+          error?.data?.originalError?.message || error?.message;
+
+        if (
+          errorMessage === "execution reverted: Election has not started yet!"
+        ) {
+          setError("Election has not started yet!");
+        } else {
+          setError("Failed to fetch election time.");
+        }
       }
     };
 

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -24,30 +25,9 @@ interface Candidate {
 }
 
 const Page = () => {
-  // const candidates = [
-  //   {
-  //     name: "Soon Wooi Yik",
-  //     position: "Manager",
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  //   {
-  //     name: "Ian",
-  //     position: "Developer",
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  //   {
-  //     name: "Ivan",
-  //     position: "Designer",
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  //   {
-  //     name: "Ivy",
-  //     position: "QA Engineer",s
-  //     avatar: "https://github.com/shadcn.png",
-  //   },
-  // ];
   const [candidates, setCandidates] = useState<Candidate[]>([]); // Initialize state with empty array
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -84,40 +64,10 @@ const Page = () => {
     fetchCandidates(); // Call the fetch function when the component mounts
   }, []); // Runs whenever candidates changes
 
-  // const handleVote = async (candidate: Candidate) => {
-  //   try {
-  //     const response = await fetch("/api/setCandidate", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         action: "incrementVote",
-  //         formData: {
-  //           id: candidate.id,
-  //         },
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`Error voting: ${response.statusText}`);
-  //     }
-
-  //     const updatedCandidates = candidates.map((c) =>
-  //       c.id === candidate.id
-  //         ? { ...c, voteCount: (parseInt(c.voteCount || "0") + 1).toString() }
-  //         : c
-  //     );
-
-  //     setCandidates(updatedCandidates);
-  //   } catch (error) {
-  //     console.error("Error voting:", error);
-  //   }
-  // };
-
   const handleVote = async (candidate: Candidate) => {
     try {
-      const response = await fetch("/api/setCandidate", {
+      // Update the vote count of candidate
+      const canResponse = await fetch("/api/setCandidate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,10 +78,9 @@ const Page = () => {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to increment vote: ${response.statusText}`);
+      if (!canResponse.ok) {
+        throw new Error(`Failed to increment vote: ${canResponse.statusText}`);
       }
-      console.log();
 
       // Update the candidate's vote count in the local state
       const updatedCandidates = candidates.map((c) =>
@@ -144,6 +93,9 @@ const Page = () => {
       );
 
       setCandidates(updatedCandidates);
+
+      // Redirect to /LiveTrack
+      router.push("/Login/VoterHomepage/LiveTrack");
     } catch (error) {
       console.error("Error incrementing vote:", error);
     }
@@ -159,17 +111,22 @@ const Page = () => {
         {candidates.map((candidate, index) => (
           <Card
             key={index}
-            className=" h-[420px] relative flex justify-center items-center"
+            className=" h-[420px] relative flex flex-col justify-center items-center"
           >
+            <Avatar className="mx-auto w-[150px] h-[150px]">
+              <AvatarImage
+                src={`https://robohash.org/${candidate.email}.png?size=120x120`}
+                alt={candidate.email}
+              />
+              <AvatarFallback>
+                {candidate.email ? candidate.email[0] : "?"}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex flex-col text-center space-y-2">
               <div className="text-2xl">{candidate.name}</div>
               <div>{candidate.position}</div>
             </div>
-            <Avatar className="absolute -top-6 mx-auto w-[120px] h-[120px]">
-              {/* set candidate.avatar if nessesary */}
-              <AvatarImage src={"https://github.com/shadcn.png"} />
-              <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
-            </Avatar>
+
             <Button
               className="bg-[#FF0505] mx-auto absolute bottom-4 px-5 py-3"
               onClick={() => handleVote(candidate)}
