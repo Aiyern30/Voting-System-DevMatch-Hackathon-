@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/Chart";
 import { useEffect, useState } from "react";
 import { contract_reader } from "@/app/load_contract";
+import Header from "@/components/ui/Components/Header";
 
 interface Candidate {
   id: string;
@@ -192,74 +193,80 @@ const Page = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      {electionTime !== null ? (
-        <div className="flex flex-col justify-center items-center h-full">
-          <div>Live Results</div>
-          <ChartContainer config={chartConfig} className="h-[500px] w-[500px]">
-            <BarChart data={chartData}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="name"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => value}
-              />
-              <YAxis
-                tickFormatter={(value) => value.toString()} // Ensure values are displayed as strings
-                axisLine={false}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar dataKey="votes" fill={chartConfig.votes.color} radius={4}>
-                <LabelList dataKey="votes" position="top" />
-              </Bar>
-            </BarChart>
-          </ChartContainer>
-        </div>
-      ) : (
-        <div className="flex justify-center items-center h-full">
-          <div className="text-center space-y-3">
-            <div className="text-3xl font-bold">Congratulations!</div>
-            {congratulationsCandidate && (
-              <>
-                <Avatar className="mx-auto w-[150px] h-[150px]">
-                  {/* Use RoboHash for the avatar image */}
-                  <AvatarImage
-                    src={`https://robohash.org/${congratulationsCandidate.name}.png?size=120x120`}
-                    alt={congratulationsCandidate.name}
-                  />
-                  {/* Fallback in case the image fails to load */}
-                  <AvatarFallback>
-                    {congratulationsCandidate.name
-                      ? congratulationsCandidate.name[0]
-                      : "?"}
-                  </AvatarFallback>
-                </Avatar>
-                <Card>
-                  <CardContent className="flex p-4">
-                    <div>
-                      <div>Total votes:</div>
-                      <div>Name:</div>
-                      <div>Gender:</div>
-                      <div>Position:</div>
-                      <div>Email:</div>
-                    </div>
-                    <div>
-                      <div>{congratulationsCandidate.voteCount}</div>
-                      <div>{congratulationsCandidate.name}</div>
-                      <div>{congratulationsCandidate.gender}</div>
-                      <div>{congratulationsCandidate.position}</div>
-                      <div>{congratulationsCandidate.email}</div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+    <div className=" flex flex-col">
+      <Header />
+      <div className="flex justify-center items-center  h-screen">
+        {electionTime !== null ? (
+          <div className="flex flex-col justify-center items-center h-full">
+            <div>Live Results</div>
+            <ChartContainer
+              config={chartConfig}
+              className="h-[500px] w-[500px]"
+            >
+              <BarChart data={chartData}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value}
+                />
+                <YAxis
+                  tickFormatter={(value) => value.toString()} // Ensure values are displayed as strings
+                  axisLine={false}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar dataKey="votes" fill={chartConfig.votes.color} radius={4}>
+                  <LabelList dataKey="votes" position="top" />
+                </Bar>
+              </BarChart>
+            </ChartContainer>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="flex justify-center items-center h-full">
+            <div className="text-center space-y-3">
+              <div className="text-3xl font-bold">Congratulations!</div>
+              {congratulationsCandidate && (
+                <>
+                  <Avatar className="mx-auto w-[150px] h-[150px]">
+                    {/* Use RoboHash for the avatar image */}
+                    <AvatarImage
+                      src={`https://robohash.org/${congratulationsCandidate.name}.png?size=120x120`}
+                      alt={congratulationsCandidate.name}
+                    />
+                    {/* Fallback in case the image fails to load */}
+                    <AvatarFallback>
+                      {congratulationsCandidate.name
+                        ? congratulationsCandidate.name[0]
+                        : "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Card>
+                    <CardContent className="flex p-4">
+                      <div>
+                        <div>Total votes:</div>
+                        <div>Name:</div>
+                        <div>Gender:</div>
+                        <div>Position:</div>
+                        <div>Email:</div>
+                      </div>
+                      <div>
+                        <div>{congratulationsCandidate.voteCount}</div>
+                        <div>{congratulationsCandidate.name}</div>
+                        <div>{congratulationsCandidate.gender}</div>
+                        <div>{congratulationsCandidate.position}</div>
+                        <div>{congratulationsCandidate.email}</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
