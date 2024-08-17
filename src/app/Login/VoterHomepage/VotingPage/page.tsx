@@ -84,6 +84,71 @@ const Page = () => {
     fetchCandidates(); // Call the fetch function when the component mounts
   }, []); // Runs whenever candidates changes
 
+  // const handleVote = async (candidate: Candidate) => {
+  //   try {
+  //     const response = await fetch("/api/setCandidate", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         action: "incrementVote",
+  //         formData: {
+  //           id: candidate.id,
+  //         },
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`Error voting: ${response.statusText}`);
+  //     }
+
+  //     const updatedCandidates = candidates.map((c) =>
+  //       c.id === candidate.id
+  //         ? { ...c, voteCount: (parseInt(c.voteCount || "0") + 1).toString() }
+  //         : c
+  //     );
+
+  //     setCandidates(updatedCandidates);
+  //   } catch (error) {
+  //     console.error("Error voting:", error);
+  //   }
+  // };
+
+  const handleVote = async (candidate: Candidate) => {
+    try {
+      const response = await fetch("/api/setCandidate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "incrementVote",
+          formData: { id: candidate.id }, // Ensure the ID is correct
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to increment vote: ${response.statusText}`);
+      }
+      console.log();
+
+      // Update the candidate's vote count in the local state
+      const updatedCandidates = candidates.map((c) =>
+        c.id === candidate.id
+          ? {
+              ...c,
+              voteCount: (parseInt(c.voteCount || "0", 10) + 1).toString(),
+            }
+          : c
+      );
+
+      setCandidates(updatedCandidates);
+    } catch (error) {
+      console.error("Error incrementing vote:", error);
+    }
+  };
+
   return (
     <div>
       <div className="text-center my-8">
@@ -105,7 +170,10 @@ const Page = () => {
               <AvatarImage src={"https://github.com/shadcn.png"} />
               <AvatarFallback>{candidate.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <Button className="bg-[#FF0505] mx-auto absolute bottom-4 px-5 py-3">
+            <Button
+              className="bg-[#FF0505] mx-auto absolute bottom-4 px-5 py-3"
+              onClick={() => handleVote(candidate)}
+            >
               Vote
             </Button>
           </Card>
