@@ -21,7 +21,7 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  // console.log("Password", password);
+  console.log("Password", password);
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -87,15 +87,36 @@ const Page: React.FC = () => {
     setLoginError(null);
 
     try {
-      // First, deploy the contract
-      const address = await deployContract();
-
-      if (!address) {
-        setLoginError("Failed to deploy contract. Please try again.");
-        return; // Stop further execution if deployment fails
+      let address: string | null = null;
+      try {
+        // Attempt to deploy the contract
+        address = await deployContract();
+      } catch (deployError) {
+        // If deployment fails due to MetaMask rejection, handle it
+        if (
+          deployError instanceof Error &&
+          deployError.message.includes(
+            "MetaMask Tx Signature: User denied transaction signature"
+          )
+        ) {
+          // Log the rejection and continue
+          console.warn(
+            "User denied the MetaMask transaction. Proceeding with login."
+          );
+        } else {
+          // Handle other deployment errors
+          throw deployError;
+        }
       }
 
-      // Proceed with the login after successful deployment
+      if (!address) {
+        // If address is still null, show a warning but proceed with login
+        setLoginError(
+          "Contract deployment was skipped. Proceeding with login."
+        );
+      }
+
+      // Proceed with the login after handling the deployment
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -121,7 +142,24 @@ const Page: React.FC = () => {
       }
     } catch (error) {
       console.error("Error during deployment or login:", error);
-      setLoginError("An error occurred. Please try again.");
+
+      if (
+        error instanceof Error &&
+        error.message.includes(
+          "MetaMask Tx Signature: User denied transaction signature"
+        )
+      ) {
+        // Handle MetaMask rejection specifically
+        setLoginSuccess("Transaction rejected. Proceeding with login.");
+        setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", "true");
+
+        setTimeout(() => {
+          router.push("/Login/OwnerHomepage");
+        }, 3000);
+      } else {
+        setLoginError("An error occurred. Please try again.");
+      }
     } finally {
       setEmail("");
       setPassword("");
