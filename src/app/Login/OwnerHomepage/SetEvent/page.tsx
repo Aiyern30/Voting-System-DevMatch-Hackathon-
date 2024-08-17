@@ -17,6 +17,7 @@ const Page = () => {
   const [electionTime, setElectionTime] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
   useEffect(() => {
     const fetchElectionTime = async () => {
       try {
@@ -45,8 +46,6 @@ const Page = () => {
     eventName: "",
     eventDate: "",
   });
-
-  console.log(input.eventDate);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -82,6 +81,7 @@ const Page = () => {
 
     try {
       if (contract_writer) {
+        // Start the election and wait for the transaction to complete
         await contract_writer.startElection(
           weeks,
           days % 7,
@@ -89,13 +89,17 @@ const Page = () => {
           minutes % 60,
           seconds % 60
         );
+
+        // Set the success message
         setSubmitSuccess("Election started successfully!");
 
+        // Reset form input fields
         setInput({
           eventName: "",
           eventDate: "",
         });
 
+        // Wait for 3 seconds before redirecting
         setTimeout(() => {
           setSubmitSuccess(null);
           router.push("/Login/OwnerHomepage"); // Redirect after success
@@ -105,6 +109,9 @@ const Page = () => {
         setSubmitError(
           "Failed to interact with the contract. Please try again."
         );
+        setTimeout(() => {
+          setSubmitError(null);
+        }, 3000);
       }
     } catch (error: any) {
       let errorMessage = "An error occurred. Please try again.";
@@ -116,6 +123,55 @@ const Page = () => {
         errorMessage = error.message;
       }
 
+      // Set the error message and clear it after 3 seconds
+      setSubmitError(errorMessage);
+      setTimeout(() => {
+        setSubmitError(null);
+      }, 3000);
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      if (contract_writer) {
+        // Reset the election using the smart contract
+        await contract_writer.resetElection();
+
+        // Call the backend API to reset the election
+        const response = await fetch("/api/resetElection", {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to reset the election via the API.");
+        }
+
+        // Show a success message
+        setSubmitSuccess("Election reset successfully!");
+
+        // Wait for 3 seconds before redirecting
+        setTimeout(() => {
+          setSubmitSuccess(null);
+          router.push("/Login/OwnerHomepage"); // Redirect after success
+        }, 3000);
+      } else {
+        console.error("Contract writer is not initialized.");
+        setSubmitError(
+          "Failed to interact with the contract. Please try again."
+        );
+        setTimeout(() => {
+          setSubmitError(null);
+        }, 3000);
+      }
+    } catch (error: any) {
+      let errorMessage = "An error occurred. Please try again.";
+      if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      // Set the error message and clear it after 3 seconds
       setSubmitError(errorMessage);
       setTimeout(() => {
         setSubmitError(null);
@@ -131,9 +187,10 @@ const Page = () => {
           <Card className="bg-transparent border-0 shadow-none relative">
             <div>Event Started</div>
             <Button
-              type="submit"
+              type="button"
               variant={"default"}
               className="flex mx-auto bg-[#C39898] text-white rounded-full hover:bg-white hover:text-black p-5"
+              onClick={handleReset}
             >
               Reset
             </Button>
