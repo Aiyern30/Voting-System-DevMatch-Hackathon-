@@ -21,20 +21,24 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  console.log("Password", password);
+  // console.log("Password", password);
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const router = useRouter();
   const { setIsLoggedIn } = useAuth();
-  const [isPasscodeRequested, setIsPasscodeRequested] =
-    useState<boolean>(false);
 
   const [abi, setABI] = useState(null);
   const [bytecode, setBytecode] = useState(null);
   const [deployedAddress, setDeployedAddress] = useState("");
   const [contractReader, setContractReader] = useState(null);
   const [contractWriter, setContractWriter] = useState(null);
+
+  //generate TAC
+  const [isPasscodeRequested, setIsPasscodeRequested] =
+    useState<boolean>(false);
+  const [generatedTAC, setGeneratedTAC] = useState<number>("");
+  const [tacRequested, setTacRequested] = useState<boolean>(false);
   const deployContract = async () => {
     try {
       if (!window.ethereum) {
@@ -50,7 +54,7 @@ const Page: React.FC = () => {
 
       // Check if signer is correctly fetched
       const address = await signer.getAddress();
-      console.log("Connected account:", address);
+      // console.log("Connected account:", address);
 
       const contract = new ethers.ContractFactory(
         dvs_artifact.abi,
@@ -65,7 +69,7 @@ const Page: React.FC = () => {
       const deployedAddress = contract_deploy.address;
       localStorage.setItem("deployed_address", deployedAddress);
 
-      console.log("Contract deployed to address:", deployedAddress);
+      // console.log("Contract deployed to address:", deployedAddress);
     } catch (error) {
       console.error("Error deploying contract:", error);
     }
@@ -84,7 +88,7 @@ const Page: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data.message);
+        // console.log(data.message);
         setLoginSuccess("Login successful! Redirecting...");
         setIsLoggedIn(true); // Update the login state
         localStorage.setItem("isLoggedIn", "true"); // Store login state in local storage
@@ -125,7 +129,7 @@ const Page: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data.message);
+        // console.log(data.message);
         setLoginSuccess(data.message);
         setIsLoggedIn(true); // Update login state if necessary
 
@@ -151,14 +155,20 @@ const Page: React.FC = () => {
   const handleEmailReq = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // generate TAC and show in page here
+
+      const newTAC = Math.floor(Math.random() * 900000) + 100000;
+      setGeneratedTAC(newTAC);
+      setTacRequested(true);
+      // console.log(`Generated TAC: ${newTAC}`); // Debugging
+      // console.log(`type of newTAC: ${typeof newTAC}`);
       const response = await fetch("/api/requestPasscode", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, newTAC }),
       });
-
       if (response.ok) {
         const data = await response.json();
         if (data.message.includes("pending")) {

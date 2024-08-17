@@ -91,7 +91,7 @@ const Page = () => {
         );
       }
       const data = await response.json();
-      console.log(data.message); // Handle success message
+      // console.log(data.message); // Handle success message
 
       setVoters((prevVoters) =>
         prevVoters.filter((voter) => !selectedVoters.includes(voter.index))
@@ -102,67 +102,6 @@ const Page = () => {
     }
   };
 
-  // const handleVerifySelected = async () => {
-  //   try {
-  //     // Update voter status in the database
-  //     const response = await fetch("/api/voter", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         action: "updateStatus",
-  //         formData: {
-  //           ids: selectedVoters, // Pass the selected voter IDs/indices
-  //           status: "verified",
-  //         },
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(
-  //         `Failed to update voter status: ${response.statusText}`
-  //       );
-  //     }
-
-  //     // Update the local state after successful database update
-  //     const updatedVoters = voters.map((voter) => {
-  //       if (
-  //         selectedVoters.includes(voter.index) &&
-  //         voter.status === "pending"
-  //       ) {
-  //         // Update voter status to "verified"
-
-  //         return { ...voter, status: "verified" };
-  //       }
-  //       return voter;
-  //     });
-
-  //     setVoters(updatedVoters);
-  //     setSelectedVoters([]);
-
-  //     // Filter voters who need to receive TAC emails
-  //     const votersToEmail = updatedVoters.filter((voter) =>
-  //       selectedVoters.includes(voter.index)
-  //     );
-
-  //     // Send TAC emails to verified voters
-  //     for (const voter of votersToEmail) {
-  //       await emailjs.send(
-  //         "service_6jeiqgq",
-  //         "template_dfleaku",
-  //         {
-  //           to_email: voter.email,
-  //           generated_tac: voter.tac,
-  //         },
-  //         "WlJ2AEL5DC96v1nwC"
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Error verifying voters:", error);
-  //     setError((error as Error).message);
-  //   }
-  // };
   const handleVerifySelected = async () => {
     try {
       // Filter selected voters to only those with "pending" status
@@ -171,7 +110,7 @@ const Page = () => {
           selectedVoters.includes(voter.index) && voter.status === "pending"
       );
 
-      console.log("pending voters: ", pendingVoters);
+      // console.log("pending voters: ", pendingVoters);
 
       if (pendingVoters.length === 0) {
         // If no voters with "pending" status are selected, set an error message
