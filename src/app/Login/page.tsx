@@ -21,7 +21,7 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  console.log("Password", password);
+  // console.log("Password", password);
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -170,16 +170,61 @@ const Page: React.FC = () => {
     }
   };
 
+  // const handleEmailReq = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     // generate TAC and show in page here
+  //     const newTAC = Math.floor(Math.random() * 900000) + 100000;
+  //     setGeneratedTAC(newTAC);
+  //     setTacRequested(true);
+  //     // console.log(`Generated TAC: ${newTAC}`); // Debugging
+  //     // console.log(`type of newTAC: ${typeof newTAC}`);
+  //     const response = await fetch("/api/requestPasscode", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ email, newTAC }),
+  //     });
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       if (data.message.includes("pending")) {
+  //         setLoginError(data.message);
+  //         setTimeout(() => {
+  //           setLoginError(null);
+  //         }, 3000);
+  //       } else if (data.message.includes("successful")) {
+  //         setIsPasscodeRequested(true); // Allow passcode input to be editable
+  //         setLoginSuccess(data.message);
+  //         setTimeout(() => {
+  //           setLoginSuccess(null);
+  //         }, 3000);
+  //       }
+  //     } else {
+  //       const data = await response.json();
+  //       setLoginError(data.message);
+  //       setTimeout(() => {
+  //         setLoginError(null);
+  //       }, 3000);
+  //     }
+  //   } catch (error) {
+  //     setLoginError("An error occurred. Please try again.");
+  //     setTimeout(() => {
+  //       setLoginError(null);
+  //     }, 3000);
+  //   }
+  // };
+
   const handleEmailReq = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      // generate TAC and show in page here
 
-      const newTAC = Math.floor(Math.random() * 900000) + 100000;
-      setGeneratedTAC(newTAC);
-      setTacRequested(true);
-      // console.log(`Generated TAC: ${newTAC}`); // Debugging
-      // console.log(`type of newTAC: ${typeof newTAC}`);
+    // Generate TAC
+    const newTAC = Math.floor(Math.random() * 900000) + 100000;
+    setGeneratedTAC(newTAC);
+    setTacRequested(true);
+
+    try {
       const response = await fetch("/api/requestPasscode", {
         method: "POST",
         headers: {
@@ -195,7 +240,7 @@ const Page: React.FC = () => {
           setTimeout(() => {
             setLoginError(null);
           }, 3000);
-        } else if (data.message.includes("successful")) {
+        } else if (data.message.includes("verified")) {
           setIsPasscodeRequested(true); // Allow passcode input to be editable
           setLoginSuccess(data.message);
           setTimeout(() => {
@@ -210,6 +255,7 @@ const Page: React.FC = () => {
         }, 3000);
       }
     } catch (error) {
+      console.error("Error in handleEmailReq:", error);
       setLoginError("An error occurred. Please try again.");
       setTimeout(() => {
         setLoginError(null);
