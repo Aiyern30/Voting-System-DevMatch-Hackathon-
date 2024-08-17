@@ -153,7 +153,7 @@ const Page: React.FC = () => {
 
         // Show success message and redirect after 3 seconds
         setTimeout(() => {
-          router.push("/Login/VoterHomepage"); // Redirect to VoterHomePage
+          router.push("/Login/VoterHomepage/VotingPage"); // Redirect to VoterHomePage
         }, 3000);
       } else {
         const data = await response.json();
