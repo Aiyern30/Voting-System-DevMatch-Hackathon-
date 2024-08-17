@@ -28,6 +28,7 @@ interface Candidate {
 
 const Page = () => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  console.log("candidates", candidates);
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>(
     []
   );
@@ -57,7 +58,7 @@ const Page = () => {
           email: item.candidateemail,
           gender: item.candidategender,
           position: item.candidateposition,
-          voteCount: item.voteCount || "0",
+          voteCount: item.votecount,
         }));
 
         setCandidates(mappedCandidates);

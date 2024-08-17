@@ -7,6 +7,7 @@ export default async function handler(
 ) {
   try {
     const candidates = await getCandidates();
+    console.log("candidates", candidates);
     res.status(200).json(candidates);
   } catch (error) {
     console.error("Error fetching candidates:", error);

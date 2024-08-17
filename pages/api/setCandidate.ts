@@ -58,6 +58,33 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return res
           .status(200)
           .json({ message: "Candidates removed successfully!" });
+      } else if (action === "incrementVote") {
+        const { id } = formData;
+
+        if (!id) {
+          return res.status(400).json({ message: "No candidate ID provided." });
+        }
+
+        console.log("I havnt update");
+
+        try {
+          const updateQuery = `
+            UPDATE candidate
+            SET votecount = votecount + 1
+            WHERE cid = $1
+          `;
+          const updateValues = [formData.id];
+
+          const result = await client.query(updateQuery, updateValues);
+          console.log("result query: ", result);
+
+          return res
+            .status(200)
+            .json({ message: "Vote count updated successfully!" });
+        } catch (error) {
+          console.error("Error updating vote count:", error);
+          return res.status(500).json({ error: "Error updating vote count" });
+        }
       } else {
         return res.status(400).json({ message: "Invalid action specified." });
       }

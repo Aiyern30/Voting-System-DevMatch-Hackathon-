@@ -21,4 +21,5 @@ export interface voter {
   votertac: string; // Match the exact property name
   voteremail: string; // Match the exact property name
   status: string; // Match the exact property name
+  votecount: number; // Match the exact property name
 }
