@@ -1,6 +1,5 @@
 "use client";
 import dvs_artifact from "@/DVS/artifacts/contracts/DVS.sol/Voter.json";
-import dao_artifact from "@/DVS/artifacts/contracts/DVS.sol/Voter.json"; // Update with the correct path and contract name
 
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
@@ -22,16 +21,26 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  console.log("Password", password);
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const router = useRouter();
   const { setIsLoggedIn } = useAuth();
-  const [isPasscodeRequested, setIsPasscodeRequested] =
-    useState<boolean>(false);
   const [isRequestingAccounts, setIsRequestingAccounts] =
     useState<boolean>(false);
 
+  const [abi, setABI] = useState(null);
+  const [bytecode, setBytecode] = useState(null);
+  const [deployedAddress, setDeployedAddress] = useState("");
+  const [contractReader, setContractReader] = useState(null);
+  const [contractWriter, setContractWriter] = useState(null);
+
+  //generate TAC
+  const [isPasscodeRequested, setIsPasscodeRequested] =
+    useState<boolean>(false);
+  const [generatedTAC, setGeneratedTAC] = useState<number>(0);
+  const [tacRequested, setTacRequested] = useState<boolean>(false);
   const deployContract = async () => {
     if (!window.ethereum) {
       console.error("Ethereum provider not found.");
@@ -138,7 +147,7 @@ const Page: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data.message);
+        // console.log(data.message);
         setLoginSuccess(data.message);
         setIsLoggedIn(true); // Update login state if necessary
 
@@ -164,12 +173,19 @@ const Page: React.FC = () => {
   const handleEmailReq = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // generate TAC and show in page here
+
+      const newTAC = Math.floor(Math.random() * 900000) + 100000;
+      setGeneratedTAC(newTAC);
+      setTacRequested(true);
+      // console.log(`Generated TAC: ${newTAC}`); // Debugging
+      // console.log(`type of newTAC: ${typeof newTAC}`);
       const response = await fetch("/api/requestPasscode", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, newTAC }),
       });
 
       if (response.ok) {
@@ -304,7 +320,6 @@ const Page: React.FC = () => {
                         Request
                       </Button>
                     </div>
-
                     <div className="flex space-y-1.5 relative w-full">
                       <Input
                         id="password"
@@ -334,6 +349,7 @@ const Page: React.FC = () => {
                     >
                       Login
                     </Button>
+                              
                   </div>
                 </form>
               </CardContent>

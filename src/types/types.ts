@@ -16,3 +16,9 @@ export interface Candidate {
   // candidatepicture: string;
 }
 
+export interface voter {
+  index: number; // Match the exact property name
+  votertac: string; // Match the exact property name
+  voteremail: string; // Match the exact property name
+  status: string; // Match the exact property name
+}
