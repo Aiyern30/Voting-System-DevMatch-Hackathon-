@@ -21,12 +21,14 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  // console.log("Password", password);
+  console.log("Password", password);
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const router = useRouter();
   const { setIsLoggedIn } = useAuth();
+  const [isRequestingAccounts, setIsRequestingAccounts] =
+    useState<boolean>(false);
 
   const [abi, setABI] = useState(null);
   const [bytecode, setBytecode] = useState(null);
@@ -37,47 +39,63 @@ const Page: React.FC = () => {
   //generate TAC
   const [isPasscodeRequested, setIsPasscodeRequested] =
     useState<boolean>(false);
-  const [generatedTAC, setGeneratedTAC] = useState<number>("");
+  const [generatedTAC, setGeneratedTAC] = useState<number>(0);
   const [tacRequested, setTacRequested] = useState<boolean>(false);
   const deployContract = async () => {
-    try {
-      if (!window.ethereum) {
-        console.error("Ethereum provider not found.");
-        return;
-      }
+    if (!window.ethereum) {
+      console.error("Ethereum provider not found.");
+      return null;
+    }
 
-      // Request account access
+    if (isRequestingAccounts) {
+      console.warn("Already requesting accounts. Please wait.");
+      return null;
+    }
+
+    setIsRequestingAccounts(true);
+    try {
       await window.ethereum.request({ method: "eth_requestAccounts" });
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner();
-
-      // Check if signer is correctly fetched
-      const address = await signer.getAddress();
-      // console.log("Connected account:", address);
-
-      const contract = new ethers.ContractFactory(
+      const signer = provider.getSigner();
+      const contractFactory = new ethers.ContractFactory(
         dvs_artifact.abi,
         dvs_artifact.bytecode,
         signer
       );
 
-      const contract_deploy = await contract.deploy();
+      const contractDeploy = await contractFactory.deploy();
+      await contractDeploy.deployed();
 
-      await contract_deploy.deployed();
-
-      const deployedAddress = contract_deploy.address;
+      const deployedAddress = contractDeploy.address;
       localStorage.setItem("deployed_address", deployedAddress);
 
-      // console.log("Contract deployed to address:", deployedAddress);
+      console.log("Contract deployed to address:", deployedAddress);
+      return deployedAddress;
     } catch (error) {
       console.error("Error deploying contract:", error);
+      return null;
+    } finally {
+      setIsRequestingAccounts(false);
     }
   };
 
   const handleHostLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    setLoginSuccess(null);
+    setLoginError(null);
+
     try {
+      // First, deploy the contract
+      const address = await deployContract();
+
+      if (!address) {
+        setLoginError("Failed to deploy contract. Please try again.");
+        return; // Stop further execution if deployment fails
+      }
+
+      // Proceed with the login after successful deployment
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -88,29 +106,29 @@ const Page: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // console.log(data.message);
+        console.log(data.message);
+
         setLoginSuccess("Login successful! Redirecting...");
-        setIsLoggedIn(true); // Update the login state
-        localStorage.setItem("isLoggedIn", "true"); // Store login state in local storage
-        deployContract();
-        // Clear the input fields
-        setEmail("");
-        setPassword("");
+        setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", "true");
 
         setTimeout(() => {
           router.push("/Login/OwnerHomepage");
-        }, 3000); // Delay the redirect
+        }, 3000);
       } else {
         const data = await response.json();
-        setLoginError(data.message);
-        setTimeout(() => {
-          setLoginError(null);
-        }, 3000);
+        setLoginError(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
+      console.error("Error during deployment or login:", error);
       setLoginError("An error occurred. Please try again.");
+    } finally {
+      setEmail("");
+      setPassword("");
+
       setTimeout(() => {
         setLoginError(null);
+        setLoginSuccess(null);
       }, 3000);
     }
   };
@@ -169,6 +187,7 @@ const Page: React.FC = () => {
         },
         body: JSON.stringify({ email, newTAC }),
       });
+
       if (response.ok) {
         const data = await response.json();
         if (data.message.includes("pending")) {
@@ -301,7 +320,6 @@ const Page: React.FC = () => {
                         Request
                       </Button>
                     </div>
-
                     <div className="flex space-y-1.5 relative w-full">
                       <Input
                         id="password"
@@ -331,6 +349,7 @@ const Page: React.FC = () => {
                     >
                       Login
                     </Button>
+                              
                   </div>
                 </form>
               </CardContent>
