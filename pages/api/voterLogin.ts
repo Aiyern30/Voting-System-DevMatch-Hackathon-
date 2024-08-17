@@ -19,12 +19,12 @@ export default async function handler(
 
       if (result.rows.length > 0) {
         const voter = result.rows[0];
-        
+
         // Check if the status is 'verified'
-        if (voter.status !== 'verified') {
+        if (voter.status !== "verified") {
           return res.status(401).json({ message: "Voter not verified." });
         }
-        
+
         // Compare the provided passcode with the stored votertac directly
         if (password === voter.votertac) {
           res.status(200).json({ message: "Login successful" });
