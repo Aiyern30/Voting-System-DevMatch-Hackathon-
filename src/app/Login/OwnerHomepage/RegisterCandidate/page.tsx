@@ -43,28 +43,6 @@ const Page = () => {
     email: "",
   });
 
-  useEffect(() => {
-    // Fetch the cid from the database
-    const fetchCid = async () => {
-      try {
-        const response = await fetch("/api/getCandidateCid", {
-          method: "GET",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setCid(data.cid); // Assuming the response returns the cid
-        } else {
-          console.log("Failed to fetch cid.");
-        }
-      } catch (error) {
-        console.error("Error fetching cid:", error);
-      }
-    };
-
-    fetchCid();
-  }, []);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setInput((prevInput) => ({
@@ -83,21 +61,6 @@ const Page = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Ensure that input fields are not empty
-    if (
-      !input.id ||
-      !input.name ||
-      !input.gender ||
-      !input.position ||
-      !input.email
-    ) {
-      setSubmitError("Please fill in all required fields.");
-      setTimeout(() => {
-        setSubmitError(null);
-      }, 3000);
-      return;
-    }
-
     const formData = {
       candidateid: input.id,
       candidateName: input.name,
@@ -107,40 +70,40 @@ const Page = () => {
     };
 
     try {
-      // Check if contract_writer is initialized
-      if (contract_writer) {
-        // Attempt to add the candidate
-        await contract_writer.addCandidate(input.name, input.id);
-
-        // If addCandidate is successful, proceed with the API call
-        const response = await fetch("/api/setCandidate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ action: "register", formData }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setSubmitSuccess("Submit successful!");
+      // Check if contract_writer is not null or undefined
+      if (!contract_writer) {
+        setSubmitError(
+          "Contract writer is not available. Please try again later."
+        );
+        setTimeout(() => {
           setSubmitError(null);
+        }, 3000);
+        return; // Stop further execution
+      }
 
-          setTimeout(() => {
-            router.push("/Login/OwnerHomepage/CandidateList");
-          }, 3000);
-        } else {
-          // Extract error message from response
-          const data = await response.json();
-          setSubmitError(
-            data.message || "An error occurred. Please try again."
-          );
-          setTimeout(() => {
-            setSubmitError(null);
-          }, 3000);
-        }
+      // Attempt to add the candidate
+      await contract_writer.addCandidate(input.name, input.id);
+
+      // If addCandidate is successful, proceed with the API call
+      const response = await fetch("/api/setCandidate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action: "register", formData }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSubmitSuccess("Submit successful!");
+        setSubmitError(null);
+
+        setTimeout(() => {
+          router.push("/Login/OwnerHomepage/CandidateList");
+        }, 3000);
       } else {
-        setSubmitError("Contract writer is not initialized.");
+        const data = await response.json();
+        setSubmitError(data.message);
         setTimeout(() => {
           setSubmitError(null);
         }, 3000);
@@ -174,21 +137,6 @@ const Page = () => {
         setSubmitError(null);
       }, 3000);
     }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const reader = new FileReader();
-
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      if (reader.result) {
-        // setPreview(reader.result as string); // Set the image preview
-      }
-    };
-    const target = e.target as HTMLInputElement & {
-      files: FileList;
-    };
-    console.log("Reader ready state: ", reader.readyState);
-    reader.readAsDataURL(target.files[0]); // Read the file as a data URL (base64 encoded image)
   };
 
   return (
