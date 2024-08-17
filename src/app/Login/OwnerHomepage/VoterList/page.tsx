@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { useRouter } from "next/navigation";
 import emailjs from "emailjs-com";
+import { contract_writer } from "@/app/load_contract";
 // import { voter } from "@/types/types";
 
 interface Voter {

@@ -18,6 +18,8 @@ import {
   Tooltip,
   TooltipProps,
   XAxis,
+  YAxis, // Add YAxis import
+  LabelList, // Import LabelList for bar labels
 } from "recharts";
 
 import {
@@ -28,13 +30,59 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/Chart";
+import { useEffect, useState } from "react";
 
-const page = () => {
-  const chartData = [
-    { name: "Ian", votes: 186 },
-    { name: "Ivan", votes: 305 },
-    { name: "Ivy", votes: 237 },
-  ];
+interface Candidate {
+  id: string;
+  name: string;
+  email?: string;
+  gender?: string;
+  position?: string;
+  voteCount?: string;
+}
+
+const Page = () => {
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const response = await fetch("/api/getCandidates", {
+          method: "GET",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok: ${response.statusText}`
+          );
+        }
+        const data: Candidate[] = await response.json();
+
+        const mappedCandidates: Candidate[] = data.map((item: any) => ({
+          id: item.cid,
+          name: item.candidatename,
+          email: item.candidateemail,
+          gender: item.candidategender,
+          position: item.candidateposition,
+          voteCount: item.votecount,
+        }));
+
+        setCandidates(mappedCandidates);
+      } catch (error) {
+        setError((error as Error).message);
+      }
+    };
+
+    fetchCandidates();
+  }, []);
+
+  const chartData = candidates.map((candidate) => ({
+    name: candidate.name,
+    votes: parseInt(candidate.voteCount || "0"),
+  }));
 
   const chartConfig = {
     votes: {
@@ -58,7 +106,7 @@ const page = () => {
   return (
     <div className="flex ">
       <div className="flex justify-center items-center h-full">
-        <div className="flex flex items-center">
+        <div className="flex items-center">
           <div className="text-center text-[40px] px-7">
             Oops! Session Timeout
           </div>
@@ -83,9 +131,16 @@ const page = () => {
               axisLine={false}
               tickFormatter={(value) => value}
             />
+            <YAxis
+              tickFormatter={(value) => value.toString()} // Ensure values are displayed as strings
+              axisLine={false}
+            />
             <Tooltip content={<CustomTooltip />} />
             <ChartLegend content={<ChartLegendContent />} />
-            <Bar dataKey="votes" fill={chartConfig.votes.color} radius={4} />
+            <Bar dataKey="votes" fill={chartConfig.votes.color} radius={4}>
+              <LabelList dataKey="votes" position="top" />{" "}
+              {/* Add LabelList here */}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>
@@ -121,4 +176,5 @@ const page = () => {
     </div>
   );
 };
-export default page;
+
+export default Page;
