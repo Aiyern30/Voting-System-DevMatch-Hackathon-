@@ -20,7 +20,7 @@ interface Candidate {
   email?: string; // Add optional properties if needed
   gender?: string;
   position?: string;
-  votecount?: string; // Include other properties if needed
+  voteCount?: string; // Include other properties if needed
 }
 
 const Page = () => {
@@ -72,7 +72,7 @@ const Page = () => {
           email: item.candidateemail,
           gender: item.candidategender,
           position: item.candidateposition,
-          votecount: item.votecount, // Adjust if voteCount is not part of the response
+          voteCount: item.voteCount || "0", // Adjust if voteCount is not part of the response
         }));
 
         setCandidates(mappedCandidates);
@@ -138,7 +138,7 @@ const Page = () => {
         c.id === candidate.id
           ? {
               ...c,
-              voteCount: (parseInt(c.votecount || "0", 10) + 1).toString(),
+              voteCount: (parseInt(c.voteCount || "0", 10) + 1).toString(),
             }
           : c
       );
