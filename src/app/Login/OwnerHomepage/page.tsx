@@ -17,13 +17,30 @@ const Page = () => {
   useEffect(() => {
     const fetchElectionTime = async () => {
       try {
+        // Check if contract_reader is null or undefined
+        if (!contract_reader) {
+          throw new Error("Contract reader is not available.");
+        }
+
         const data = await contract_reader.getElection_time();
         const timeInSeconds = Number(data); // Ensure it's a number
-        localStorage.setItem('election_time', timeInSeconds.toString());
+        localStorage.setItem("election_time", timeInSeconds.toString());
         setElectionTime(timeInSeconds);
-      } catch (error) {
+      } catch (error: any) {
+        // Handle error of type 'any'
         console.error("Error fetching election time:", error);
-        setError("Failed to fetch election time.");
+
+        // Check the specific error message at different levels
+        const errorMessage =
+          error?.data?.originalError?.message || error?.message;
+
+        if (
+          errorMessage === "execution reverted: Election has not started yet!"
+        ) {
+          setError("Election has not started yet!");
+        } else {
+          setError("Failed to fetch election time.");
+        }
       }
     };
 
@@ -31,7 +48,7 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    const storedTimeStr = localStorage.getItem('election_time');
+    const storedTimeStr = localStorage.getItem("election_time");
     const storedTime = storedTimeStr ? Number(storedTimeStr) : null;
 
     if (storedTime === null) return; // Exit if no election time
@@ -51,10 +68,10 @@ const Page = () => {
           set_show_seconds(remainingSeconds);
 
           // Save updated time to localStorage
-          localStorage.setItem('election_time', newTime.toString());
+          localStorage.setItem("election_time", newTime.toString());
 
           if (newTime <= 0) {
-            localStorage.setItem('election_status', "Ended");
+            localStorage.setItem("election_status", "Ended");
             clearInterval(update_election_time); // Clear interval when time ends
             return null; // Stop updating time
           }
@@ -75,7 +92,12 @@ const Page = () => {
         {error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <p>Election Time: {electionTime !== null ? `${show_days} Days ${show_hours} Hours ${show_minutes} Minutes ${show_seconds} Seconds` : "Loading..."}</p>
+          <p>
+            Election Time:{" "}
+            {electionTime !== null
+              ? `${show_days} Days ${show_hours} Hours ${show_minutes} Minutes ${show_seconds} Seconds`
+              : "Loading..."}
+          </p>
         )}
       </div>
 

@@ -17,14 +17,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           !formData.candidateName ||
           !formData.candidateGender ||
           !formData.candidatePosition ||
-          !formData.candidateEmail
+          !formData.candidateEmail ||
+          !formData.candidateid
         ) {
           return res.status(400).json({ message: "Missing required fields." });
         }
 
         const insertQuery = `
-          INSERT INTO Candidate (candidateName, candidateGender, candidatePosition, candidateEmail)
-          VALUES ($1, $2, $3, $4) RETURNING cid
+          INSERT INTO Candidate (candidateName, candidateGender, candidatePosition, candidateEmail, candidateid)
+          VALUES ($1, $2, $3, $4, $5) RETURNING cid
         `;
 
         const insertValues = [
@@ -32,6 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           formData.candidateGender,
           formData.candidatePosition,
           formData.candidateEmail,
+          formData.candidateid,
         ];
 
         const result = await client.query(insertQuery, insertValues);
@@ -41,7 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           cid: result.rows[0].cid, // Return the generated cid }
         });
       } else if (action === "delete") {
-        // console.log("Data received for deletion: ", formData.ids);
+        console.log("Data received for deletion: ", formData.ids);
 
         if (!Array.isArray(formData.ids) || formData.ids.length === 0) {
           return res
@@ -49,13 +51,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             .json({ message: "No candidate IDs provided for deletion." });
         }
 
-        const deleteQuery = "DELETE FROM Candidate WHERE cid = ANY($1)";
+        const deleteQuery = "DELETE FROM Candidate WHERE candidateid = ANY($1)";
         const deleteValues = [formData.ids];
-        // console.log("deleteValues in api: ", formData.ids);
-
         await client.query(deleteQuery, deleteValues);
-
-        // console.log("res in dlt: ", res);
 
         return res
           .status(200)
