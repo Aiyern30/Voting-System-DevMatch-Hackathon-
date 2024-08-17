@@ -17,17 +17,30 @@ const config: HardhatUserConfig = {
     }
   },
   networks: {
-    sepolia: {
-      url: 'https://api-sepolia.etherscan.io' || '',
+    scrollSepolia: {
+      url: 'https://sepolia-rpc.scroll.io' || '',
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
   },
   etherscan: {
     apiKey: {
-      sepolia: `8M8RRZGRAJWXTUPVHK7YPZCUCG9K81C6ZM`,
+      scrollSepolia: `${process.env.SCROLL_API_KEY}`,
     },
+    customChains: [
+      {
+        network: 'scrollSepolia',
+        chainId: 534351,
+        urls: {
+          apiURL: 'https://api-sepolia.scrollscan.com/api',
+          browserURL: 'https://sepolia.scrollscan.com/',
+        },
+      },
+    ],
   },
+  sourcify: {
+    enabled: true,
+  }
 };
 
 export default config;

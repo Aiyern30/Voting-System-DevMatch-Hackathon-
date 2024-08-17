@@ -56,7 +56,6 @@ contract Election {
     event setElection_time_(uint256 indexed endTime_);
     
     function getElection_time() external view isElection returns(uint256) { return endTime - block.timestamp; }
-    function getElection_status() external view returns(bool) { return block.timestamp < endTime; }
 
     function resetElection() external isHost isElection {
         for(uint i=0; i<candidate.length; i++) 
@@ -137,7 +136,7 @@ contract Voter is Candidate {
 
     function getTAC() view public returns(uint256[] memory) { return storageTAC; }
 
-    function verifyTAC() view public returns(bool) {
+    function verifyTAC() public view returns(bool) {
         for(uint8 i=0; i<storageTAC.length; i++)
             if(storageTAC[i] == TAC) return true;
         return false;
