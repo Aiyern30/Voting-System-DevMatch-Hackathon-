@@ -30,11 +30,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           .json({ message: "Voter(s) removed successfully!" });
       } else if (action === "updateStatus") {
         // await connectToDatabase();
-        // console.log("form data in update status api:  ", formData);
+
+        // if (!formData || formData.ids.length === 0) {
+        //   return res.status(400).json({ message: "No voter IDs provided." });
+        // }
         if (!formData || formData.ids.length === 0) {
           return res.status(400).json({ message: "No voter IDs provided." });
         }
-        // console.log("form data in api: ", formData);
 
         const updateQuery = `
           UPDATE Voter SET status = $2 WHERE index = ANY($1::int[])
@@ -42,11 +44,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const updateValues = [formData.ids, formData.status]; // Pass the ids and status
 
         try {
-          // console.log("Update Query:", updateQuery);
-          // console.log("Update Values:", updateValues);
-
           const result = await client.query(updateQuery, updateValues);
-          // console.log("Update result:", result);
 
           return res
             .status(200)
