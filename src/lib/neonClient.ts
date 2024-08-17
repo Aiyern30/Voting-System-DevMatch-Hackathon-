@@ -1,4 +1,4 @@
-// src/lib/neonClient.ts
+// src / lib / neonClient.ts;
 import { Client } from "pg";
 
 const client = new Client({
@@ -17,7 +17,6 @@ const connectToDatabase = async () => {
     console.log("Connected to NeonDB");
   }
   return client; // Return the client instance after connecting
-
 };
 
 const disconnectFromDatabase = async () => {
