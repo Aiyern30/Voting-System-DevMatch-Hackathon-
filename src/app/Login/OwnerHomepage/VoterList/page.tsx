@@ -91,7 +91,7 @@ const Page = () => {
         );
       }
       const data = await response.json();
-      console.log(data.message); // Handle success message
+      // console.log(data.message); // Handle success message
 
       setVoters((prevVoters) =>
         prevVoters.filter((voter) => !selectedVoters.includes(voter.index))
@@ -171,7 +171,7 @@ const Page = () => {
           selectedVoters.includes(voter.index) && voter.status === "pending"
       );
 
-      console.log("pending voters: ", pendingVoters);
+      // console.log("pending voters: ", pendingVoters);
 
       if (pendingVoters.length === 0) {
         // If no voters with "pending" status are selected, set an error message

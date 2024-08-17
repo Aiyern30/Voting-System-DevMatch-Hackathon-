@@ -4,8 +4,8 @@ import { connectToDatabase, client } from "@/lib/neonClient";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const { action, formData } = req.body;
-    console.log("Received formData inside api:", formData); // Log the received data
-    console.log("Received action inside api:", action);
+    // console.log("Received formData inside api:", formData); // Log the received data
+    // console.log("Received action inside api:", action);
 
     try {
       await connectToDatabase();
@@ -41,7 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           cid: result.rows[0].cid, // Return the generated cid }
         });
       } else if (action === "delete") {
-        console.log("Data received for deletion: ", formData.ids);
+        // console.log("Data received for deletion: ", formData.ids);
 
         if (!Array.isArray(formData.ids) || formData.ids.length === 0) {
           return res
@@ -51,11 +51,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         const deleteQuery = "DELETE FROM Candidate WHERE cid = ANY($1)";
         const deleteValues = [formData.ids];
-        console.log("deleteValues in api: ", formData.ids);
+        // console.log("deleteValues in api: ", formData.ids);
 
         await client.query(deleteQuery, deleteValues);
 
-        console.log("res in dlt: ", res);
+        // console.log("res in dlt: ", res);
 
         return res
           .status(200)

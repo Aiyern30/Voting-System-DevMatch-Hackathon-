@@ -21,7 +21,7 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  console.log("Password", password);
+  // console.log("Password", password);
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -54,7 +54,7 @@ const Page: React.FC = () => {
 
       // Check if signer is correctly fetched
       const address = await signer.getAddress();
-      console.log("Connected account:", address);
+      // console.log("Connected account:", address);
 
       const contract = new ethers.ContractFactory(
         dvs_artifact.abi,
@@ -69,7 +69,7 @@ const Page: React.FC = () => {
       const deployedAddress = contract_deploy.address;
       localStorage.setItem("deployed_address", deployedAddress);
 
-      console.log("Contract deployed to address:", deployedAddress);
+      // console.log("Contract deployed to address:", deployedAddress);
     } catch (error) {
       console.error("Error deploying contract:", error);
     }
@@ -88,7 +88,7 @@ const Page: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data.message);
+        // console.log(data.message);
         setLoginSuccess("Login successful! Redirecting...");
         setIsLoggedIn(true); // Update the login state
         localStorage.setItem("isLoggedIn", "true"); // Store login state in local storage
@@ -129,7 +129,7 @@ const Page: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data.message);
+        // console.log(data.message);
         setLoginSuccess(data.message);
         setIsLoggedIn(true); // Update login state if necessary
 
@@ -160,8 +160,8 @@ const Page: React.FC = () => {
       const newTAC = Math.floor(Math.random() * 900000) + 100000;
       setGeneratedTAC(newTAC);
       setTacRequested(true);
-      console.log(`Generated TAC: ${newTAC}`); // Debugging
-      console.log(`type of newTAC: ${typeof newTAC}`);
+      // console.log(`Generated TAC: ${newTAC}`); // Debugging
+      // console.log(`type of newTAC: ${typeof newTAC}`);
       const response = await fetch("/api/requestPasscode", {
         method: "POST",
         headers: {

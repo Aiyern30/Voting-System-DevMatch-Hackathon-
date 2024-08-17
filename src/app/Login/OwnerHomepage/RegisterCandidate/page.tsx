@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/Select";
 import { useRouter } from "next/navigation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/Alert";
-import { contract_reader,contract_writer } from "@/app/load_contract";
+import { contract_reader, contract_writer } from "@/app/load_contract";
 
 // import { v4 as uuidv4 } from "uuid";
 
@@ -55,7 +55,7 @@ const Page = () => {
           const data = await response.json();
           setCid(data.cid); // Assuming the response returns the cid
         } else {
-          console.log("Failed to fetch cid.");
+          // console.log("Failed to fetch cid.");
         }
       } catch (error) {
         console.error("Error fetching cid:", error);
@@ -91,7 +91,7 @@ const Page = () => {
       candidateEmail: input.email,
     };
 
-    console.log("FormData: ", formData);
+    // console.log("FormData: ", formData);
 
     try {
       const response = await fetch("/api/setCandidate", {
@@ -101,14 +101,14 @@ const Page = () => {
         },
         body: JSON.stringify({ action: "register", formData }),
       });
-      console.log("I run after fetch", formData);
+      // console.log("I run after fetch", formData);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("data: ", data);
+        // console.log("data: ", data);
 
         setSubmitSuccess(null);
-        await contract_writer.addCandidate(input.name,input.id)
+        await contract_writer.addCandidate(input.name, input.id);
         setTimeout(() => {
           setSubmitError(null),
             setSubmitSuccess("Submit successful!"),
@@ -116,7 +116,7 @@ const Page = () => {
         }, 3000);
       } else {
         const data = await response.json();
-        console.log("data for submit: ", data);
+        // console.log("data for submit: ", data);
         setSubmitError(data.message);
         setTimeout(() => {
           setSubmitError(null);
@@ -141,7 +141,7 @@ const Page = () => {
     const target = e.target as HTMLInputElement & {
       files: FileList;
     };
-    console.log("Reader ready state: ", reader.readyState);
+    // console.log("Reader ready state: ", reader.readyState);
     reader.readAsDataURL(target.files[0]); // Read the file as a data URL (base64 encoded image)
   };
 

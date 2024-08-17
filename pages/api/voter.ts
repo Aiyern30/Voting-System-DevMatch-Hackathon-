@@ -4,7 +4,7 @@ import { getVoters } from "@/lib/voter";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { action, formData } = req.body;
-  console.log("Received formData inside api:", formData);
+
   if (req.method === "POST") {
     try {
       await connectToDatabase();
@@ -38,7 +38,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           cid: result.rows[0].cid, // Return the generated cid
         });
       } else if (action === "delete") {
-        console.log("Data received for deletion: ", formData.ids);
+        // console.log("Data received for deletion: ", formData.ids);
 
         if (!Array.isArray(formData.ids) || formData.ids.length === 0) {
           return res
@@ -48,22 +48,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         const deleteQuery = "DELETE FROM Voter WHERE index = ANY($1)";
         const deleteValues = [formData.ids];
-        console.log("deleteValues in api: ", formData.ids);
+        // console.log("deleteValues in api: ", formData.ids);
 
         await client.query(deleteQuery, deleteValues);
 
-        console.log("res in dlt: ", res);
+        // console.log("res in dlt: ", res);
 
         return res
           .status(200)
           .json({ message: "Voter(s) removed successfully!" });
       } else if (action === "updateStatus") {
         // await connectToDatabase();
-        console.log("form data in update status api:  ", formData);
+        // console.log("form data in update status api:  ", formData);
         if (!formData || formData.ids.length === 0) {
           return res.status(400).json({ message: "No voter IDs provided." });
         }
-        console.log("form data in api: ", formData);
+        // console.log("form data in api: ", formData);
 
         const updateQuery = `
           UPDATE Voter SET status = $2 WHERE index = ANY($1::int[])
@@ -71,11 +71,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const updateValues = [formData.ids, formData.status]; // Pass the ids and status
 
         try {
-          console.log("Update Query:", updateQuery);
-          console.log("Update Values:", updateValues);
+          // console.log("Update Query:", updateQuery);
+          // console.log("Update Values:", updateValues);
 
           const result = await client.query(updateQuery, updateValues);
-          console.log("Update result:", result);
+          // console.log("Update result:", result);
 
           return res
             .status(200)

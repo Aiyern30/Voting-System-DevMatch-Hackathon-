@@ -97,7 +97,7 @@ const Page = () => {
       }
 
       const data = await response.json();
-      console.log(data.message); // Handle success message
+      // console.log(data.message); // Handle success message
 
       // Remove deleted candidates from state
       setCandidates((prevCandidates) =>
