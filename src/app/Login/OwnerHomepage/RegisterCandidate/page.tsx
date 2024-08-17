@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/Select";
 import { useRouter } from "next/navigation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/Alert";
-import { contract_reader,contract_writer } from "@/app/load_contract";
+import { contract_reader, contract_writer } from "@/app/load_contract";
 
 // import { v4 as uuidv4 } from "uuid";
 
@@ -83,6 +83,21 @@ const Page = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Ensure that input fields are not empty
+    if (
+      !input.id ||
+      !input.name ||
+      !input.gender ||
+      !input.position ||
+      !input.email
+    ) {
+      setSubmitError("Please fill in all required fields.");
+      setTimeout(() => {
+        setSubmitError(null);
+      }, 3000);
+      return;
+    }
+
     const formData = {
       candidateid: input.id,
       candidateName: input.name,
@@ -91,39 +106,70 @@ const Page = () => {
       candidateEmail: input.email,
     };
 
-    console.log("FormData: ", formData);
-
     try {
-      const response = await fetch("/api/setCandidate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ action: "register", formData }),
-      });
-      console.log("I run after fetch", formData);
+      // Check if contract_writer is initialized
+      if (contract_writer) {
+        // Attempt to add the candidate
+        await contract_writer.addCandidate(input.name, input.id);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("data: ", data);
+        // If addCandidate is successful, proceed with the API call
+        const response = await fetch("/api/setCandidate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "register", formData }),
+        });
 
-        setSubmitSuccess(null);
-        await contract_writer.addCandidate(input.name,input.id)
-        setTimeout(() => {
-          setSubmitError(null),
-            setSubmitSuccess("Submit successful!"),
+        if (response.ok) {
+          const data = await response.json();
+          setSubmitSuccess("Submit successful!");
+          setSubmitError(null);
+
+          setTimeout(() => {
             router.push("/Login/OwnerHomepage/CandidateList");
-        }, 3000);
+          }, 3000);
+        } else {
+          // Extract error message from response
+          const data = await response.json();
+          setSubmitError(
+            data.message || "An error occurred. Please try again."
+          );
+          setTimeout(() => {
+            setSubmitError(null);
+          }, 3000);
+        }
       } else {
-        const data = await response.json();
-        console.log("data for submit: ", data);
-        setSubmitError(data.message);
+        setSubmitError("Contract writer is not initialized.");
         setTimeout(() => {
           setSubmitError(null);
         }, 3000);
       }
     } catch (error) {
-      setSubmitError("An error occurred. Please try again.");
+      // Log the entire error object to the console for debugging
+      console.error("Detailed error information:", error);
+
+      // Determine if the error is an instance of Error
+      if (error instanceof Error) {
+        // Handle known errors
+        if (error.message.includes("Candidate Existed")) {
+          setSubmitError("Candidate ID already exists.");
+        } else {
+          setSubmitError(
+            "An error occurred while adding the candidate. Please try again."
+          );
+        }
+      } else if (typeof error === "object" && error !== null) {
+        // Handle errors that are objects but not instances of Error
+        const errorMessage =
+          (error as any).message ||
+          "An unknown error occurred. Please try again.";
+        setSubmitError(errorMessage);
+      } else {
+        // Handle unknown error types
+        setSubmitError("An unknown error occurred. Please try again.");
+      }
+
       setTimeout(() => {
         setSubmitError(null);
       }, 3000);
