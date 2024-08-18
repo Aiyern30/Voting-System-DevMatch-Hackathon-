@@ -17,6 +17,8 @@ export default async function handler(
       const values = [email];
       const result = await client.query(query, values);
 
+      console.log("Result: ", result);
+
       if (result.rows.length > 0) {
         const voter = result.rows[0];
 
@@ -27,6 +29,7 @@ export default async function handler(
 
         // Compare the provided passcode with the stored votertac directly
         if (password === voter.votertac) {
+          //find where to get the correcr voter id and ids: {voter id}
           res.status(200).json({ message: "Login successful" });
         } else {
           res.status(401).json({ message: "Invalid passcode" });

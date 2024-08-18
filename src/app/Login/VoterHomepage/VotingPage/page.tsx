@@ -66,6 +66,8 @@ const Page = () => {
 
   const handleVote = async (candidate: Candidate) => {
     try {
+      const userEmail = localStorage.getItem("userEmail");
+      // const userId = localStorage.getItem("userId");
       // Update the vote count of candidate
       const canResponse = await fetch("/api/setCandidate", {
         method: "POST",
@@ -78,8 +80,31 @@ const Page = () => {
         }),
       });
 
+      //update voter status to verified
+      const votResponse = await fetch("/api/voter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "updateStatus",
+          formData: {
+            ids: userId,
+            status: "verified",
+            // userEmail,
+            // userId,
+          }, // Include the email and ID
+        }),
+      });
+
       if (!canResponse.ok) {
         throw new Error(`Failed to increment vote: ${canResponse.statusText}`);
+      }
+
+      if (!votResponse.ok) {
+        throw new Error(
+          `Failed to change the vote status: ${canResponse.statusText}`
+        );
       }
 
       // Update the candidate's vote count in the local state

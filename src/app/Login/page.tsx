@@ -21,7 +21,6 @@ const Page: React.FC = () => {
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  console.log("Password", password);
   const [registerEmail, setRegisterEmail] = useState<string>("");
   const [registerPassword, setRegisterPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -171,6 +170,42 @@ const Page: React.FC = () => {
     }
   };
 
+  // const handleVoterLogin = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const response = await fetch("/api/voterLogin", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ email, password }),
+  //     });
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setLoginSuccess(data.message);
+  //       setIsLoggedIn(true); // Update login state if necessary
+
+  //       // Show success message and redirect after 3 seconds
+  //       setTimeout(() => {
+  //         router.push("/Login/VoterHomepage/VotingPage"); // Redirect to VoterHomePage
+  //       }, 3000);
+  //     } else {
+  //       const data = await response.json();
+  //       setLoginError(data.message);
+  //       setTimeout(() => {
+  //         setLoginError(null);
+  //       }, 3000);
+  //     }
+  //   } catch (error) {
+  //     setLoginError("An error occurred. Please try again.");
+  //     setTimeout(() => {
+  //       setLoginError(null);
+  //     }, 3000);
+  //   }
+  // };
+
   const handleVoterLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -185,13 +220,15 @@ const Page: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // console.log(data.message);
         setLoginSuccess(data.message);
-        setIsLoggedIn(true); // Update login state if necessary
+        setIsLoggedIn(true);
+        console.log("Data from server: ", data);
+        // Store the user's email and ID in localStorage or state
+        localStorage.setItem("userEmail", data.email);
+        localStorage.setItem("userId", data.id);
 
-        // Show success message and redirect after 3 seconds
         setTimeout(() => {
-          router.push("/Login/VoterHomepage/VotingPage"); // Redirect to VoterHomePage
+          router.push("/Login/VoterHomepage/VotingPage");
         }, 3000);
       } else {
         const data = await response.json();
@@ -207,52 +244,6 @@ const Page: React.FC = () => {
       }, 3000);
     }
   };
-
-  // const handleEmailReq = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     // generate TAC and show in page here
-  //     const newTAC = Math.floor(Math.random() * 900000) + 100000;
-  //     setGeneratedTAC(newTAC);
-  //     setTacRequested(true);
-  //     // console.log(`Generated TAC: ${newTAC}`); // Debugging
-  //     // console.log(`type of newTAC: ${typeof newTAC}`);
-  //     const response = await fetch("/api/requestPasscode", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email, newTAC }),
-  //     });
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       if (data.message.includes("pending")) {
-  //         setLoginError(data.message);
-  //         setTimeout(() => {
-  //           setLoginError(null);
-  //         }, 3000);
-  //       } else if (data.message.includes("successful")) {
-  //         setIsPasscodeRequested(true); // Allow passcode input to be editable
-  //         setLoginSuccess(data.message);
-  //         setTimeout(() => {
-  //           setLoginSuccess(null);
-  //         }, 3000);
-  //       }
-  //     } else {
-  //       const data = await response.json();
-  //       setLoginError(data.message);
-  //       setTimeout(() => {
-  //         setLoginError(null);
-  //       }, 3000);
-  //     }
-  //   } catch (error) {
-  //     setLoginError("An error occurred. Please try again.");
-  //     setTimeout(() => {
-  //       setLoginError(null);
-  //     }, 3000);
-  //   }
-  // };
 
   const handleEmailReq = async (e: React.FormEvent) => {
     e.preventDefault();
